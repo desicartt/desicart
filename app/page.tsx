@@ -5,6 +5,15 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Cart from "@/components/Cart";
 
+interface ProductRow {
+  id: string;
+  name: string;
+  price: number | string | null;
+  shelf_price: number | string | null;
+  image_url?: string | null;
+  category?: string | null;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -30,9 +39,28 @@ export default function Home() {
   }, []);
 
   async function fetchProducts() {
-    const { data } = await supabase.from("products").select("*").order("name");
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("name");
 
-    setProducts((data as Product[]) || []);
+    if (error) {
+      console.error(error);
+      setLoading(false);
+      return;
+    }
+
+    const normalised: Product[] =
+      (data as ProductRow[] | null)?.map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: Number(p.price ?? 0),
+        shelf_price: Number(p.shelf_price ?? p.price ?? 0),
+        image_url: p.image_url ?? null,
+        category: p.category ?? null,
+      })) || [];
+
+    setProducts(normalised);
     setLoading(false);
   }
 

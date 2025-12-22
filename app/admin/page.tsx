@@ -22,7 +22,7 @@ const CATEGORY_OPTIONS = [
   "other",
 ];
 
-const STORAGE_BUCKET = "product-images"; // create this bucket in Supabase (public)
+const STORAGE_BUCKET = "product-images"; // make sure this bucket exists and is public
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -44,6 +44,7 @@ export default function AdminProducts() {
 
   async function fetchProducts() {
     setLoading(true);
+
     const { data, error } = await supabase
       .from("products")
       .select("id, name, price, shelf_price, image_url, category")
@@ -56,7 +57,17 @@ export default function AdminProducts() {
       return;
     }
 
-    setProducts((data as Product[]) || []);
+    const normalised: Product[] =
+      (data || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        price: Number(p.price ?? 0),
+        shelf_price: Number(p.shelf_price ?? p.price ?? 0),
+        image_url: p.image_url ?? null,
+        category: p.category ?? null,
+      })) || [];
+
+    setProducts(normalised);
     setLoading(false);
   }
 
@@ -121,7 +132,10 @@ export default function AdminProducts() {
 
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(filePath, file);
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: true,
+      });
 
     if (uploadError) {
       console.error(uploadError);
@@ -129,10 +143,22 @@ export default function AdminProducts() {
       return;
     }
 
-    const url = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filePath)
-      .data.publicUrl;
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
 
-    handleLocalChange(id, "image_url", url);
+    handleLocalChange(id, "image_url", publicUrl);
+
+    const { error: updateError } = await supabase
+      .from("products")
+      .update({ image_url: publicUrl })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      alert("Failed to save image URL");
+      return;
+    }
   }
 
   function handleNewChange(field: keyof typeof newProduct, value: string) {
@@ -148,20 +174,16 @@ export default function AdminProducts() {
 
     setCreating(true);
 
-    const { data, error } = await supabase
-      .from("products")
-      .insert({
-        name: newProduct.name,
-        price: parseFloat(newProduct.price),
-        shelf_price: newProduct.shelf_price
-          ? parseFloat(newProduct.shelf_price)
-          : parseFloat(newProduct.price),
-        image_url: newProduct.image_url || null,
-        category: newProduct.category || null,
-        // store_id: ...  // if you use multi-store, set default here
-      })
-      .select("id")
-      .single();
+    const { error } = await supabase.from("products").insert({
+      name: newProduct.name,
+      price: parseFloat(newProduct.price),
+      shelf_price: newProduct.shelf_price
+        ? parseFloat(newProduct.shelf_price)
+        : parseFloat(newProduct.price),
+      image_url: newProduct.image_url || null,
+      category: newProduct.category || null,
+      // store_id: ... // set if you use stores
+    });
 
     setCreating(false);
 
@@ -180,10 +202,6 @@ export default function AdminProducts() {
     });
 
     await fetchProducts();
-
-    if (data?.id) {
-      alert("Product created. You can now upload an image for it.");
-    }
   }
 
   return (
