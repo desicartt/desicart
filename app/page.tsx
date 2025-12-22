@@ -115,9 +115,9 @@ export default function Home() {
       : products.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="relative min-h-screen bg-slate-50 text-slate-900 pb-20">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-xl">
+      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-md">
@@ -125,13 +125,15 @@ export default function Home() {
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-900">GoJack</p>
-              <p className="text-xs text-slate-500">Smart Grocery Network</p>
+              <p className="text-xs text-slate-500">
+                AI‑powered batch grocery network
+              </p>
             </div>
           </div>
 
           <button
             onClick={() => setShowCart(true)}
-            className="relative flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:border-indigo-500 hover:shadow-sm transition"
+            className="relative hidden sm:flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:border-indigo-500 hover:shadow-sm transition"
           >
             <span className="text-lg">🛒</span>
             <span>Cart</span>
@@ -153,29 +155,34 @@ export default function Home() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 mb-4 shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Batch delivery · Save more with every cart
+              GoJack AI predicts optimal batch timing for your suburb
             </div>
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 mb-3">
-              Smarter <span className="text-indigo-600">grocery runs</span>,
+              Smarter{" "}
+              <span className="text-indigo-600">AI‑driven grocery runs</span>,
               delivered to you.
             </h1>
             <p className="text-sm md:text-base text-slate-600 max-w-xl">
-              GoJack groups orders in your suburb so everyone pays less.
-              Transparent progress to the \$100 batch target and clean,
-              predictable pricing.
+              GoJack analyses demand patterns in real time, grouping compatible
+              orders so you hit the \$100 batch threshold faster while keeping
+              delivery windows realistic and transparent.
+            </p>
+            <p className="mt-3 text-xs text-slate-500 max-w-xl">
+              The system learns which items people in your area buy together and
+              surfaces them first, so repeated orders get quicker every week.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
                 href="#products"
                 className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition"
               >
-                Browse products
+                Start shopping with GoJack
               </a>
               <a
                 href="#how-it-works"
                 className="inline-flex items-center justify-center rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-indigo-500 transition bg-white"
               >
-                How GoJack works
+                How the AI batching works
               </a>
             </div>
           </div>
@@ -183,20 +190,23 @@ export default function Home() {
           <div className="hidden md:block">
             <div className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-md">
               <p className="text-xs text-slate-500 mb-2">
-                Today’s batch · Your suburb
+                Live batch · West Melbourne (AI forecast)
               </p>
               <p className="text-3xl font-semibold text-slate-900 mb-1">
                 $74.20
               </p>
-              <p className="text-xs text-slate-500 mb-4">
+              <p className="text-xs text-slate-500 mb-1">
                 \$100 target · 74% complete
+              </p>
+              <p className="text-[11px] text-emerald-600 mb-3">
+                Estimated ready in 32 minutes based on current order velocity.
               </p>
               <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full w-[74%] bg-gradient-to-r from-indigo-500 to-emerald-400" />
               </div>
               <p className="mt-3 text-[11px] text-slate-500">
-                Orders lock pricing; we dispatch as soon as the batch crosses
-                \$100 for your area.
+                GoJack automatically signals store, driver, and customers when
+                the batch flips from pending → ready → on the road.
               </p>
             </div>
           </div>
@@ -204,7 +214,7 @@ export default function Home() {
       </section>
 
       {/* Category pills */}
-      <section className="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <section className="bg-white border-b border-slate-200 sticky top-[64px] z-30">
         <div className="px-6 py-3 flex overflow-x-auto gap-3 scrollbar-hide">
           {categories.map((cat) => (
             <button
@@ -316,28 +326,31 @@ export default function Home() {
         className="px-6 py-10 border-t border-slate-200 bg-white"
       >
         <h2 className="text-lg font-semibold text-slate-900 mb-4">
-          How GoJack works
+          How GoJack’s AI batching works
         </h2>
         <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
           <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-            <p className="text-xs text-slate-500 mb-1">01</p>
-            <p className="font-medium mb-1">Shop</p>
+            <p className="text-xs text-slate-500 mb-1">01 · Understand</p>
+            <p className="font-medium mb-1">Learn your area</p>
             <p className="text-xs text-slate-600">
-              Add groceries to your cart, just like a normal online store.
+              GoJack tracks anonymous order patterns to understand which suburbs
+              buy which products together and at what times.
             </p>
           </div>
           <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-            <p className="text-xs text-slate-500 mb-1">02</p>
-            <p className="font-medium mb-1">Batch</p>
+            <p className="text-xs text-slate-500 mb-1">02 · Predict</p>
+            <p className="font-medium mb-1">Forecast batches</p>
             <p className="text-xs text-slate-600">
-              Your order joins others nearby until the shared batch hits \$100.
+              The AI estimates when each batch will cross \$100, so stores and
+              drivers get accurate prep and dispatch windows.
             </p>
           </div>
           <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-            <p className="text-xs text-slate-500 mb-1">03</p>
-            <p className="font-medium mb-1">Deliver</p>
+            <p className="text-xs text-slate-500 mb-1">03 · Orchestrate</p>
+            <p className="font-medium mb-1">Sync store & driver</p>
             <p className="text-xs text-slate-600">
-              We dispatch fresh groceries with local drivers at optimized cost.
+              Once ready, GoJack surfaces a single route for the driver and
+              locks the batch for the store so packing is streamlined.
             </p>
           </div>
         </div>
@@ -347,9 +360,32 @@ export default function Home() {
       <footer className="px-6 py-4 border-t border-slate-200 bg-white text-[11px] text-slate-500 flex items-center justify-between">
         <span>© {new Date().getFullYear()} GoJack</span>
         <span className="hidden sm:inline">
-          Built for modern batch-based grocery delivery.
+          AI‑powered batch grocery delivery for modern suburbs.
         </span>
       </footer>
+
+      {/* Fixed bottom cart bar (mobile & desktop) */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 py-2 shadow-[0_-4px_12px_rgba(15,23,42,0.08)]">
+        <div className="mx-auto max-w-6xl flex items-center justify-between text-xs sm:text-sm">
+          <div className="flex items-center gap-3">
+            <span className="text-lg">🛒</span>
+            <div>
+              <p className="font-medium text-slate-800">
+                {cartTotalItems} item{cartTotalItems !== 1 ? "s" : ""} in cart
+              </p>
+              <p className="text-[11px] text-slate-500">
+                Current batch value: ${cartTotalValue.toFixed(2)} · Target \$100
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowCart(true)}
+            className="rounded-full bg-indigo-600 px-4 py-1.5 text-[11px] sm:text-xs font-medium text-white hover:bg-indigo-700 transition"
+          >
+            View cart & checkout
+          </button>
+        </div>
+      </div>
 
       {showCart && (
         <Cart
