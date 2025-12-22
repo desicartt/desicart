@@ -118,7 +118,7 @@ export default function Home() {
     <div className="relative min-h-screen bg-slate-50 text-slate-900 pb-20">
       {/* Header */}
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur-xl sticky top-0 z-40">
-        <div className="px-6 py-4 flex items-center justify-between">
+        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-md">
               <span className="text-white text-lg font-bold">GJ</span>
@@ -149,29 +149,25 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="px-6 pt-8 pb-6 border-b border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-100">
-        <div className="grid md:grid-cols-[1.5fr,1fr] gap-8 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 mb-4 shadow-sm">
+      {/* Hero (shorter, more whitespace) */}
+      <section className="border-b border-slate-200 bg-gradient-to-b from-slate-50 via-white to-slate-50">
+        <div className="mx-auto max-w-6xl px-6 py-10 grid md:grid-cols-[1.3fr,1fr] gap-10 items-center">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              GoJack AI predicts optimal batch timing for your suburb
+              GoJack AI predicts the best batch timing for your suburb
             </div>
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 mb-3">
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900">
               Smarter{" "}
               <span className="text-indigo-600">AI‑driven grocery runs</span>,
-              delivered to you.
+              without the chaos.
             </h1>
             <p className="text-sm md:text-base text-slate-600 max-w-xl">
-              GoJack analyses demand patterns in real time, grouping compatible
-              orders so you hit the \$100 batch threshold faster while keeping
-              delivery windows realistic and transparent.
+              Simple, clean grocery ordering. Browse relaxed, add items to your
+              cart, and let GoJack batch your order with nearby shoppers so
+              everyone saves on delivery.
             </p>
-            <p className="mt-3 text-xs text-slate-500 max-w-xl">
-              The system learns which items people in your area buy together and
-              surfaces them first, so repeated orders get quicker every week.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 pt-1">
               <a
                 href="#products"
                 className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition"
@@ -182,31 +178,32 @@ export default function Home() {
                 href="#how-it-works"
                 className="inline-flex items-center justify-center rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-indigo-500 transition bg-white"
               >
-                How the AI batching works
+                How it works
               </a>
             </div>
           </div>
 
           <div className="hidden md:block">
-            <div className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-md">
-              <p className="text-xs text-slate-500 mb-2">
-                Live batch · West Melbourne (AI forecast)
-              </p>
-              <p className="text-3xl font-semibold text-slate-900 mb-1">
-                $74.20
-              </p>
-              <p className="text-xs text-slate-500 mb-1">
+            <div className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-md space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-slate-500">
+                  Live batch · West Melbourne
+                </p>
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] text-emerald-700 font-medium">
+                  AI forecast
+                </span>
+              </div>
+              <p className="text-3xl font-semibold text-slate-900">$74.20</p>
+              <p className="text-xs text-slate-500">
                 \$100 target · 74% complete
-              </p>
-              <p className="text-[11px] text-emerald-600 mb-3">
-                Estimated ready in 32 minutes based on current order velocity.
               </p>
               <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full w-[74%] bg-gradient-to-r from-indigo-500 to-emerald-400" />
               </div>
-              <p className="mt-3 text-[11px] text-slate-500">
-                GoJack automatically signals store, driver, and customers when
-                the batch flips from pending → ready → on the road.
+              <p className="text-[11px] text-slate-500">
+                GoJack quietly coordinates store, driver, and customers in the
+                background. You just see when your batch is ready and on the
+                road.
               </p>
             </div>
           </div>
@@ -214,8 +211,8 @@ export default function Home() {
       </section>
 
       {/* Category pills */}
-      <section className="bg-white border-b border-slate-200 sticky top-[64px] z-30">
-        <div className="px-6 py-3 flex overflow-x-auto gap-3 scrollbar-hide">
+      <section className="bg-white border-b border-slate-200 sticky top-[72px] z-30">
+        <div className="mx-auto max-w-6xl px-6 py-3 flex overflow-x-auto gap-3 scrollbar-hide">
           {categories.map((cat) => (
             <button
               key={cat.id}
@@ -233,138 +230,155 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Products */}
-      <section id="products" className="px-6 py-8 bg-slate-50">
-        {loading ? (
-          <div className="flex justify-center items-center py-24">
-            <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500" />
-              <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                🛒
-              </div>
+      {/* Products grid with more spacing */}
+      <section id="products" className="bg-slate-50">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">
+                Fresh items for this batch
+              </h2>
+              <p className="text-xs text-slate-500">
+                Scroll comfortably; your cart sticks to the bottom so you never
+                lose track.
+              </p>
             </div>
           </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-24">
-            <p className="text-xl font-semibold text-slate-900 mb-2">
-              No products found
-            </p>
-            <p className="text-sm text-slate-500 mb-4">
-              Try another category or check back later.
-            </p>
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
-            >
-              View all products
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => {
-              const discount =
-                product.shelf_price > product.price
-                  ? Math.round((1 - product.price / product.shelf_price) * 100)
-                  : 0;
 
-              return (
-                <div
-                  key={product.id}
-                  className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-500/60 hover:shadow-lg transition-all duration-200 overflow-hidden"
-                >
-                  <div className="relative h-40 bg-slate-100 flex items-center justify-center overflow-hidden">
-                    {discount > 0 && (
-                      <div className="absolute top-2 left-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white">
-                        {discount}% OFF
-                      </div>
-                    )}
-                    {product.image_url ? (
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
-                        GoJack
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-xs font-medium text-slate-900 line-clamp-2 min-h-[2.4rem]">
-                      {product.name}
-                    </h3>
-                    <div className="mt-2 flex items-end justify-between">
-                      <div>
-                        <div className="text-base font-semibold text-emerald-600">
-                          ${product.price.toFixed(2)}
+          {loading ? (
+            <div className="flex justify-center items-center py-24">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500" />
+                <div className="absolute inset-0 flex items-center justify-center text-slate-400">
+                  🛒
+                </div>
+              </div>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center py-24">
+              <p className="text-xl font-semibold text-slate-900 mb-2">
+                No products found
+              </p>
+              <p className="text-sm text-slate-500 mb-4">
+                Try another category or check back later.
+              </p>
+              <button
+                onClick={() => setSelectedCategory("all")}
+                className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+              >
+                View all products
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              {filteredProducts.map((product) => {
+                const discount =
+                  product.shelf_price > product.price
+                    ? Math.round(
+                        (1 - product.price / product.shelf_price) * 100
+                      )
+                    : 0;
+
+                return (
+                  <div
+                    key={product.id}
+                    className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-500/60 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col"
+                  >
+                    <div className="relative h-36 md:h-40 bg-slate-100 flex items-center justify-center overflow-hidden">
+                      {discount > 0 && (
+                        <div className="absolute top-2 left-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                          {discount}% OFF
                         </div>
-                        {product.shelf_price > product.price && (
-                          <div className="text-[10px] text-slate-500 line-through">
-                            ${product.shelf_price.toFixed(2)}
+                      )}
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
+                          GoJack
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3 flex-1 flex flex-col justify-between gap-2">
+                      <h3 className="text-xs font-medium text-slate-900 line-clamp-2 min-h-[2.4rem]">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-end justify-between">
+                        <div>
+                          <div className="text-base font-semibold text-emerald-600">
+                            ${product.price.toFixed(2)}
                           </div>
-                        )}
+                          {product.shelf_price > product.price && (
+                            <div className="text-[10px] text-slate-500 line-through">
+                              ${product.shelf_price.toFixed(2)}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="rounded-full bg-indigo-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-indigo-700 transition"
+                        >
+                          Add
+                        </button>
                       </div>
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="rounded-full bg-indigo-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-indigo-700 transition"
-                      >
-                        Add
-                      </button>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* How it works */}
-      <section
-        id="how-it-works"
-        className="px-6 py-10 border-t border-slate-200 bg-white"
-      >
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">
-          How GoJack’s AI batching works
-        </h2>
-        <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
-          <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-            <p className="text-xs text-slate-500 mb-1">01 · Understand</p>
-            <p className="font-medium mb-1">Learn your area</p>
-            <p className="text-xs text-slate-600">
-              GoJack tracks anonymous order patterns to understand which suburbs
-              buy which products together and at what times.
-            </p>
-          </div>
-          <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-            <p className="text-xs text-slate-500 mb-1">02 · Predict</p>
-            <p className="font-medium mb-1">Forecast batches</p>
-            <p className="text-xs text-slate-600">
-              The AI estimates when each batch will cross \$100, so stores and
-              drivers get accurate prep and dispatch windows.
-            </p>
-          </div>
-          <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-            <p className="text-xs text-slate-500 mb-1">03 · Orchestrate</p>
-            <p className="font-medium mb-1">Sync store & driver</p>
-            <p className="text-xs text-slate-600">
-              Once ready, GoJack surfaces a single route for the driver and
-              locks the batch for the store so packing is streamlined.
-            </p>
+      <section id="how-it-works" className="border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">
+            How GoJack fits into your day
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
+              <p className="text-xs text-slate-500">01 · Shop</p>
+              <p className="font-medium">Browse calmly</p>
+              <p className="text-xs text-slate-600">
+                Clean layout, no noise. Build your basket while GoJack tracks
+                how close the batch is to ready.
+              </p>
+            </div>
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
+              <p className="text-xs text-slate-500">02 · Batch</p>
+              <p className="font-medium">AI groups orders</p>
+              <p className="text-xs text-slate-600">
+                Orders from nearby customers are grouped automatically to hit
+                the sweet spot between speed and savings.
+              </p>
+            </div>
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
+              <p className="text-xs text-slate-500">03 · Deliver</p>
+              <p className="font-medium">Track at a glance</p>
+              <p className="text-xs text-slate-600">
+                Simple status updates from store and driver – no cluttered map,
+                just clear timing.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="px-6 py-4 border-t border-slate-200 bg-white text-[11px] text-slate-500 flex items-center justify-between">
-        <span>© {new Date().getFullYear()} GoJack</span>
-        <span className="hidden sm:inline">
-          AI‑powered batch grocery delivery for modern suburbs.
-        </span>
+      <footer className="border-t border-slate-200 bg-white text-[11px] text-slate-500">
+        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+          <span>© {new Date().getFullYear()} GoJack</span>
+          <span className="hidden sm:inline">
+            AI‑powered batch grocery delivery for modern suburbs.
+          </span>
+        </div>
       </footer>
 
-      {/* Fixed bottom cart bar (mobile & desktop) */}
+      {/* Fixed bottom cart bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 py-2 shadow-[0_-4px_12px_rgba(15,23,42,0.08)]">
         <div className="mx-auto max-w-6xl flex items-center justify-between text-xs sm:text-sm">
           <div className="flex items-center gap-3">
