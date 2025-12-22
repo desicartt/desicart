@@ -6,16 +6,9 @@
   html {
     font-size: 16px;
   }
-}
 
-@layer components {
-  .btn-primary {
-    @apply bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:from-emerald-600 hover:to-green-700 active:scale-95 transition-all duration-200 w-full;
-  }
-  .card {
-    @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6;
-  }
-  .bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50 max-w-md mx-auto;
+  body {
+    margin: 0;
+    padding: 0;
   }
 }
