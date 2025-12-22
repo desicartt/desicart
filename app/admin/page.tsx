@@ -1,4 +1,3 @@
-// app/admin/page.tsx
 "use client";
 
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
@@ -21,8 +20,7 @@ const CATEGORY_OPTIONS = [
   "beverages",
   "other",
 ];
-
-const STORAGE_BUCKET = "product-images"; // make sure this bucket exists and is public
+const STORAGE_BUCKET = "product-images";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -44,14 +42,13 @@ export default function AdminProducts() {
 
   async function fetchProducts() {
     setLoading(true);
-
     const { data, error } = await supabase
       .from("products")
       .select("id, name, price, shelf_price, image_url, category")
       .order("name");
 
     if (error) {
-      console.error(error);
+      console.error("fetchProducts error", error);
       alert("Failed to load products");
       setLoading(false);
       return;
@@ -71,13 +68,9 @@ export default function AdminProducts() {
     setLoading(false);
   }
 
-  function handleLocalChange(
-    id: string,
-    field: keyof Product,
-    value: string | number | null
-  ) {
+  function handleLocalChange(id: string, field: keyof Product, value: any) {
     setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, [field]: value as any } : p))
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
     );
   }
 
@@ -98,7 +91,7 @@ export default function AdminProducts() {
     setSavingId(null);
 
     if (error) {
-      console.error(error);
+      console.error("saveProduct error", error);
       alert("Failed to save product");
       return;
     }
@@ -112,7 +105,7 @@ export default function AdminProducts() {
     const { error } = await supabase.from("products").delete().eq("id", id);
 
     if (error) {
-      console.error(error);
+      console.error("deleteProduct error", error);
       alert("Failed to delete product");
       return;
     }
@@ -138,7 +131,7 @@ export default function AdminProducts() {
       });
 
     if (uploadError) {
-      console.error(uploadError);
+      console.error("upload error", uploadError);
       alert("Failed to upload image");
       return;
     }
@@ -155,7 +148,7 @@ export default function AdminProducts() {
       .eq("id", id);
 
     if (updateError) {
-      console.error(updateError);
+      console.error("update image_url error", updateError);
       alert("Failed to save image URL");
       return;
     }
@@ -182,13 +175,12 @@ export default function AdminProducts() {
         : parseFloat(newProduct.price),
       image_url: newProduct.image_url || null,
       category: newProduct.category || null,
-      // store_id: ... // set if you use stores
     });
 
     setCreating(false);
 
     if (error) {
-      console.error(error);
+      console.error("create product error", error);
       alert("Failed to create product");
       return;
     }
