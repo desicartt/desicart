@@ -1,9 +1,11 @@
+// app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "DesiCart - Authentic Indian Groceries",
-  description: "Save up to 40% on premium Indian groceries with batch delivery",
+  title: "GoJack - Smart Grocery Batching",
+  description:
+    "Futuristic online grocery store with intelligent batch delivery.",
 };
 
 export default function RootLayout({
@@ -13,11 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="theme-color" content="#f97316" />
-      </head>
-      <body>{children}</body>
+      <body className="bg-slate-950 min-h-screen flex items-center justify-center antialiased">
+        <div className="w-full max-w-6xl bg-slate-950/70 border border-slate-800 rounded-3xl shadow-[0_0_80px_rgba(79,70,229,0.35)] overflow-hidden">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
