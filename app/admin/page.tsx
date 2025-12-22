@@ -1,364 +1,172 @@
+// app/admin/page.tsx
 "use client";
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-interface Order {
+interface Product {
   id: string;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
-  delivery_address: string;
-  delivery_date: string;
-  total: number;
-  status: string;
-  store_id: string;
-  items: string;
-  created_at: string;
-  stores: {
-    name: string;
-    location: any;
-  };
+  name: string;
+  price: number;
+  shelf_price: number;
+  image_url: string | null;
+  category: string | null;
 }
 
-interface Batch {
-  delivery_date: string;
-  store: string;
-  store_id: string;
-  orders: Order[];
-  total: number;
-}
+const CATEGORY_OPTIONS = [
+  "rice",
+  "spices",
+  "lentils",
+  "snacks",
+  "beverages",
+  "other",
+];
 
-export default function AdminDashboard() {
-  const [batches, setBatches] = useState<Batch[]>([]);
+export default function AdminProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [processingBatch, setProcessingBatch] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBatches();
-
-    // Realtime updates when new orders come in
-    const subscription = supabase
-      .channel("orders-admin")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        fetchBatches
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    fetchProducts();
   }, []);
 
-  async function fetchBatches() {
-    const { data: orders } = await supabase
-      .from("orders")
-      .select("*, stores(name, location)")
-      .eq("status", "pending")
-      .order("delivery_date");
+  async function fetchProducts() {
+    const { data } = await supabase
+      .from("products")
+      .select("id, name, price, shelf_price, image_url, category")
+      .order("name");
 
-    if (!orders) {
-      setLoading(false);
-      return;
-    }
-
-    // Group by delivery_date + store_id
-    const grouped = orders.reduce(
-      (acc: Record<string, Batch>, order: Order) => {
-        const key = `${order.delivery_date}-${order.store_id}`;
-        if (!acc[key]) {
-          acc[key] = {
-            delivery_date: order.delivery_date,
-            store: order.stores.name,
-            store_id: order.store_id,
-            orders: [],
-            total: 0,
-          };
-        }
-        acc[key].orders.push(order);
-        acc[key].total += order.total;
-        return acc;
-      },
-      {}
-    );
-
-    setBatches(Object.values(grouped));
+    setProducts((data as Product[]) || []);
     setLoading(false);
   }
 
-  async function markBatchReady(batch: Batch) {
-    const batchKey = `${batch.delivery_date}-${batch.store_id}`;
-    setProcessingBatch(batchKey);
+  function handleLocalChange(id: string, field: keyof Product, value: string) {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+    );
+  }
 
-    try {
-      // Update all orders in batch to 'ready'
-      const orderIds = batch.orders.map((o) => o.id);
-      const { error: updateError } = await supabase
-        .from("orders")
-        .update({ status: "ready" })
-        .in("id", orderIds);
+  async function saveProduct(product: Product) {
+    setSavingId(product.id);
 
-      if (updateError) {
-        console.error("Error updating orders:", updateError);
-        alert("Failed to update orders");
-        setProcessingBatch(null);
-        return;
-      }
+    const { error } = await supabase
+      .from("products")
+      .update({
+        image_url: product.image_url,
+        category: product.category,
+      })
+      .eq("id", product.id);
 
-      // Send email notifications to all customers
-      const notificationPromises = batch.orders.map((order) =>
-        fetch("/api/notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: order.id,
-            customerEmail: order.customer_email,
-            customerName: order.customer_name,
-            status: "ready",
-          }),
-        }).catch((err) => {
-          console.error(`Failed to notify ${order.customer_email}:`, err);
-          // Continue even if notification fails
-        })
-      );
+    setSavingId(null);
 
-      await Promise.all(notificationPromises);
-
-      // Refresh batches
-      await fetchBatches();
-      alert(`✓ Batch marked ready! ${batch.orders.length} customers notified.`);
-    } catch (error) {
-      console.error("Error processing batch:", error);
-      alert("Error processing batch");
-    } finally {
-      setProcessingBatch(null);
+    if (error) {
+      console.error(error);
+      alert("Failed to save product");
+      return;
     }
+
+    alert("Product updated");
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading batches...</p>
-        </div>
+      <div className="p-6">
+        <p className="text-sm text-slate-500">Loading products…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">DesiCart Admin</h1>
-          <p className="text-gray-600 mt-2">
-            Manage order batches and deliveries
+    <div className="p-6 bg-slate-50 min-h-[600px]">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900">
+            GoJack · Product Admin
+          </h1>
+          <p className="text-xs text-slate-500">
+            Set categories and image URLs for each product.
           </p>
         </div>
+        <button
+          onClick={fetchProducts}
+          className="rounded-full border border-slate-300 bg-white px-4 py-1.5 text-xs font-medium text-slate-700 hover:border-primary-500"
+        >
+          Refresh
+        </button>
+      </div>
 
-        {batches.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <div className="text-6xl mb-4">📦</div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              No Pending Orders
-            </h2>
-            <p className="text-gray-500">
-              Orders will appear here once customers place them
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {batches.map((batch) => {
-              const batchKey = `${batch.delivery_date}-${batch.store_id}`;
-              const isProcessing = processingBatch === batchKey;
-              const isReady = batch.total >= 100;
-              const remaining = 100 - batch.total;
+      <div className="border border-slate-200 rounded-2xl bg-white overflow-hidden">
+        <div className="grid grid-cols-[2fr,1.5fr,1fr,auto] gap-4 px-4 py-2 text-[11px] font-semibold text-slate-500 border-b border-slate-200">
+          <div>Name</div>
+          <div>Image URL</div>
+          <div>Category</div>
+          <div></div>
+        </div>
 
-              return (
-                <div
-                  key={batchKey}
-                  className="bg-white border rounded-lg shadow-sm overflow-hidden"
-                >
-                  {/* Header */}
-                  <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 border-b">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                          {batch.store}
-                        </h2>
-                        <p className="text-gray-600 text-sm mb-1">
-                          📅 Delivery:{" "}
-                          {new Date(batch.delivery_date).toLocaleDateString(
-                            "en-AU",
-                            {
-                              weekday: "long",
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            }
-                          )}
-                        </p>
-                        <p className="text-gray-500 text-sm">
-                          📋 {batch.orders.length} order
-                          {batch.orders.length !== 1 ? "s" : ""}
-                        </p>
-                      </div>
-
-                      <div className="text-right">
-                        <p
-                          className={`text-4xl font-bold mb-1 ${
-                            isReady ? "text-green-600" : "text-orange-500"
-                          }`}
-                        >
-                          ${batch.total.toFixed(2)}
-                        </p>
-                        {isReady ? (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            ✓ Ready to Process
-                          </span>
-                        ) : (
-                          <p className="text-sm text-gray-600">
-                            ${remaining.toFixed(2)} until $100
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    {!isReady && (
-                      <div className="mt-4">
-                        <div className="flex justify-between text-xs text-gray-600 mb-1">
-                          <span>Batch Progress</span>
-                          <span>{Math.round((batch.total / 100) * 100)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                          <div
-                            className="bg-gradient-to-r from-orange-400 to-orange-500 h-3 rounded-full transition-all duration-500"
-                            style={{
-                              width: `${Math.min(
-                                (batch.total / 100) * 100,
-                                100
-                              )}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Orders List */}
-                  <div className="p-6">
-                    <div className="space-y-3">
-                      {batch.orders.map((order) => (
-                        <div
-                          key={order.id}
-                          className="flex justify-between items-center bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition-colors"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">
-                              {order.customer_name}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              {order.customer_phone}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {order.delivery_address}
-                            </p>
-                          </div>
-                          <div className="text-right ml-4">
-                            <p className="font-bold text-lg text-gray-900">
-                              ${order.total.toFixed(2)}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(order.created_at).toLocaleTimeString(
-                                "en-AU",
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  {isReady && (
-                    <div className="p-6 bg-gray-50 border-t">
-                      <button
-                        onClick={() => markBatchReady(batch)}
-                        disabled={isProcessing}
-                        className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
-                          isProcessing
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-green-600 hover:bg-green-700 hover:shadow-lg"
-                        }`}
-                      >
-                        {isProcessing ? (
-                          <span className="flex items-center justify-center">
-                            <svg
-                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            Processing & Notifying...
-                          </span>
-                        ) : (
-                          <span className="flex items-center justify-center">
-                            ✓ Mark Batch Ready & Notify {batch.orders.length}{" "}
-                            Customer{batch.orders.length !== 1 ? "s" : ""}
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  )}
+        <div className="max-h-[480px] overflow-y-auto divide-y divide-slate-100">
+          {products.map((p) => (
+            <div
+              key={p.id}
+              className="grid grid-cols-[2fr,1.5fr,1fr,auto] gap-4 px-4 py-3 items-center text-[13px]"
+            >
+              <div>
+                <div className="font-medium text-slate-900">{p.name}</div>
+                <div className="text-[11px] text-slate-400">
+                  ${p.price.toFixed(2)} · Shelf ${p.shelf_price.toFixed(2)}
                 </div>
-              );
-            })}
-          </div>
-        )}
+              </div>
 
-        {/* Stats Summary */}
-        {batches.length > 0 && (
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-600 text-sm mb-1">Total Pending Orders</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {batches.reduce((sum, b) => sum + b.orders.length, 0)}
-              </p>
+              <div>
+                <input
+                  type="text"
+                  value={p.image_url || ""}
+                  onChange={(e) =>
+                    handleLocalChange(p.id, "image_url", e.target.value)
+                  }
+                  placeholder="https://…"
+                  className="w-full rounded-md border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-800 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <select
+                  value={p.category || ""}
+                  onChange={(e) =>
+                    handleLocalChange(p.id, "category", e.target.value)
+                  }
+                  className="w-full rounded-md border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-800 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                >
+                  <option value="">Unset</option>
+                  {CATEGORY_OPTIONS.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {p.image_url && (
+                  <div className="h-8 w-8 rounded-md overflow-hidden border border-slate-200 bg-slate-100">
+                    <img
+                      src={p.image_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                )}
+                <button
+                  onClick={() => saveProduct(p)}
+                  disabled={savingId === p.id}
+                  className="rounded-full bg-primary-500 px-3 py-1 text-[11px] font-medium text-white hover:bg-primary-600 disabled:bg-slate-300"
+                >
+                  {savingId === p.id ? "Saving…" : "Save"}
+                </button>
+              </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-600 text-sm mb-1">Total Pending Value</p>
-              <p className="text-3xl font-bold text-gray-900">
-                ${batches.reduce((sum, b) => sum + b.total, 0).toFixed(2)}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-600 text-sm mb-1">Ready Batches</p>
-              <p className="text-3xl font-bold text-green-600">
-                {batches.filter((b) => b.total >= 100).length}
-              </p>
-            </div>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );

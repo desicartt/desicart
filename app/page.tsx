@@ -10,8 +10,8 @@ interface Product {
   name: string;
   price: number;
   shelf_price: number;
-  image_url?: string;
-  category?: string;
+  image_url?: string | null;
+  category?: string | null;
 }
 
 interface CartItem extends Product {
@@ -31,7 +31,8 @@ export default function Home() {
 
   async function fetchProducts() {
     const { data } = await supabase.from("products").select("*").order("name");
-    setProducts(data || []);
+
+    setProducts((data as Product[]) || []);
     setLoading(false);
   }
 
@@ -77,6 +78,7 @@ export default function Home() {
     { id: "lentils", name: "Lentils", icon: "🫘" },
     { id: "snacks", name: "Snacks", icon: "🍿" },
     { id: "beverages", name: "Beverages", icon: "🫖" },
+    { id: "other", name: "Other", icon: "🧺" },
   ];
 
   const filteredProducts =
@@ -85,31 +87,31 @@ export default function Home() {
       : products.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur-xl">
+      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-xl">
         <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary-500 to-slate-900 flex items-center justify-center shadow-lg">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-md">
               <span className="text-white text-lg font-bold">GJ</span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-50">GoJack</p>
-              <p className="text-xs text-slate-400">Smart Grocery Network</p>
+              <p className="text-sm font-semibold text-slate-900">GoJack</p>
+              <p className="text-xs text-slate-500">Smart Grocery Network</p>
             </div>
           </div>
 
           <button
             onClick={() => setShowCart(true)}
-            className="relative flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-100 hover:border-primary-500 hover:bg-slate-900/80 transition"
+            className="relative flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:border-indigo-500 hover:shadow-sm transition"
           >
             <span className="text-lg">🛒</span>
             <span>Cart</span>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-500">
               ${cartTotalValue.toFixed(2)}
             </span>
             {cartTotalItems > 0 && (
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary-500 text-[10px] flex items-center justify-center font-semibold">
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-indigo-500 text-[10px] flex items-center justify-center font-semibold text-white">
                 {cartTotalItems}
               </span>
             )}
@@ -118,32 +120,32 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="px-6 pt-8 pb-6 border-b border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+      <section className="px-6 pt-8 pb-6 border-b border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <div className="grid md:grid-cols-[1.5fr,1fr] gap-8 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1 text-xs text-slate-300 mb-4">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 mb-4 shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Batch delivery · Save more with every cart
             </div>
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-50 mb-3">
-              Futuristic <span className="text-primary-400">grocery runs</span>,
-              without leaving home.
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 mb-3">
+              Smarter <span className="text-indigo-600">grocery runs</span>,
+              delivered to you.
             </h1>
-            <p className="text-sm md:text-base text-slate-400 max-w-xl">
-              GoJack bundles orders in your suburb, hitting the sweet spot
-              between speed and savings. See how close your area is to the \$100
-              batch target.
+            <p className="text-sm md:text-base text-slate-600 max-w-xl">
+              GoJack groups orders in your suburb so everyone pays less.
+              Transparent progress to the \$100 batch target and clean,
+              predictable pricing.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
                 href="#products"
-                className="inline-flex items-center justify-center rounded-full bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 transition"
+                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition"
               >
                 Browse products
               </a>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center rounded-full border border-slate-700 px-5 py-2.5 text-sm font-medium text-slate-200 hover:border-primary-500 transition"
+                className="inline-flex items-center justify-center rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-indigo-500 transition bg-white"
               >
                 How GoJack works
               </a>
@@ -151,18 +153,18 @@ export default function Home() {
           </div>
 
           <div className="hidden md:block">
-            <div className="relative rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-[0_0_40px_rgba(79,70,229,0.35)]">
-              <p className="text-xs text-slate-400 mb-2">
+            <div className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-md">
+              <p className="text-xs text-slate-500 mb-2">
                 Today’s batch · Your suburb
               </p>
-              <p className="text-3xl font-semibold text-slate-50 mb-1">
+              <p className="text-3xl font-semibold text-slate-900 mb-1">
                 $74.20
               </p>
               <p className="text-xs text-slate-500 mb-4">
                 \$100 target · 74% complete
               </p>
-              <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-                <div className="h-full w-[74%] bg-gradient-to-r from-primary-500 to-emerald-400" />
+              <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-full w-[74%] bg-gradient-to-r from-indigo-500 to-emerald-400" />
               </div>
               <p className="mt-3 text-[11px] text-slate-500">
                 Orders lock pricing; we dispatch as soon as the batch crosses
@@ -174,7 +176,7 @@ export default function Home() {
       </section>
 
       {/* Category pills */}
-      <section className="bg-slate-950 border-b border-slate-800 sticky top-0 z-40">
+      <section className="bg-white border-b border-slate-200 sticky top-0 z-40">
         <div className="px-6 py-3 flex overflow-x-auto gap-3 scrollbar-hide">
           {categories.map((cat) => (
             <button
@@ -182,8 +184,8 @@ export default function Home() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition ${
                 selectedCategory === cat.id
-                  ? "bg-primary-500 text-white"
-                  : "bg-slate-900 text-slate-300 border border-slate-700 hover:border-primary-500"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-500"
               }`}
             >
               <span className="mr-2">{cat.icon}</span>
@@ -194,11 +196,11 @@ export default function Home() {
       </section>
 
       {/* Products */}
-      <section id="products" className="px-6 py-8">
+      <section id="products" className="px-6 py-8 bg-slate-50">
         {loading ? (
           <div className="flex justify-center items-center py-24">
             <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary-500" />
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500" />
               <div className="absolute inset-0 flex items-center justify-center text-slate-400">
                 🛒
               </div>
@@ -206,7 +208,7 @@ export default function Home() {
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-24">
-            <p className="text-xl font-semibold text-slate-200 mb-2">
+            <p className="text-xl font-semibold text-slate-900 mb-2">
               No products found
             </p>
             <p className="text-sm text-slate-500 mb-4">
@@ -214,7 +216,7 @@ export default function Home() {
             </p>
             <button
               onClick={() => setSelectedCategory("all")}
-              className="rounded-full bg-primary-500 px-5 py-2 text-sm font-medium text-white hover:bg-primary-600 transition"
+              className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
             >
               View all products
             </button>
@@ -230,9 +232,9 @@ export default function Home() {
               return (
                 <div
                   key={product.id}
-                  className="bg-slate-900/70 border border-slate-800 rounded-2xl shadow-sm hover:border-primary-500/60 hover:shadow-[0_0_30px_rgba(79,70,229,0.35)] transition-all duration-200 overflow-hidden"
+                  className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-500/60 hover:shadow-lg transition-all duration-200 overflow-hidden"
                 >
-                  <div className="relative h-40 bg-slate-800 flex items-center justify-center overflow-hidden">
+                  <div className="relative h-40 bg-slate-100 flex items-center justify-center overflow-hidden">
                     {discount > 0 && (
                       <div className="absolute top-2 left-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white">
                         {discount}% OFF
@@ -245,18 +247,18 @@ export default function Home() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                      <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
                         GoJack
                       </div>
                     )}
                   </div>
                   <div className="p-3">
-                    <h3 className="text-xs font-medium text-slate-50 line-clamp-2 min-h-[2.4rem]">
+                    <h3 className="text-xs font-medium text-slate-900 line-clamp-2 min-h-[2.4rem]">
                       {product.name}
                     </h3>
                     <div className="mt-2 flex items-end justify-between">
                       <div>
-                        <div className="text-base font-semibold text-emerald-400">
+                        <div className="text-base font-semibold text-emerald-600">
                           ${product.price.toFixed(2)}
                         </div>
                         {product.shelf_price > product.price && (
@@ -267,7 +269,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => addToCart(product)}
-                        className="rounded-full bg-primary-500 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-primary-600 transition"
+                        className="rounded-full bg-indigo-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-indigo-700 transition"
                       >
                         Add
                       </button>
@@ -283,30 +285,30 @@ export default function Home() {
       {/* How it works */}
       <section
         id="how-it-works"
-        className="px-6 py-10 border-t border-slate-800 bg-slate-950"
+        className="px-6 py-10 border-t border-slate-200 bg-white"
       >
-        <h2 className="text-lg font-semibold text-slate-100 mb-4">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">
           How GoJack works
         </h2>
-        <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-300">
-          <div className="border border-slate-800 rounded-2xl p-4 bg-slate-900/60">
+        <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
+          <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
             <p className="text-xs text-slate-500 mb-1">01</p>
             <p className="font-medium mb-1">Shop</p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600">
               Add groceries to your cart, just like a normal online store.
             </p>
           </div>
-          <div className="border border-slate-800 rounded-2xl p-4 bg-slate-900/60">
+          <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
             <p className="text-xs text-slate-500 mb-1">02</p>
             <p className="font-medium mb-1">Batch</p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600">
               Your order joins others nearby until the shared batch hits \$100.
             </p>
           </div>
-          <div className="border border-slate-800 rounded-2xl p-4 bg-slate-900/60">
+          <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
             <p className="text-xs text-slate-500 mb-1">03</p>
             <p className="font-medium mb-1">Deliver</p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600">
               We dispatch fresh groceries with local drivers at optimized cost.
             </p>
           </div>
@@ -314,7 +316,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="px-6 py-4 border-t border-slate-800 bg-slate-950 text-[11px] text-slate-500 flex items-center justify-between">
+      <footer className="px-6 py-4 border-t border-slate-200 bg-white text-[11px] text-slate-500 flex items-center justify-between">
         <span>© {new Date().getFullYear()} GoJack</span>
         <span className="hidden sm:inline">
           Built for modern batch-based grocery delivery.

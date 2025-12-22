@@ -10,5 +10,7 @@
   body {
     margin: 0;
     padding: 0;
+    color: #0f172a; /* slate-900 */
+    background-color: #f1f5f9; /* slate-100 */
   }
 }
