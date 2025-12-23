@@ -20,18 +20,14 @@ export default function RootLayout({
           <div className="mx-auto max-w-6xl px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs text-slate-600">
             <div className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>
-                Live in <strong>West & East Melbourne</strong> (incl.
-                Nunawading)
-              </span>
+              <span>Live across key suburbs in Melbourne</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
               <span className="text-[11px] text-slate-600">
-                Same‑day delivery only for batches that lock in{" "}
-                <strong>before 2pm</strong>.
+                AI‑powered batching for fair delivery fees.
               </span>
               <span className="hidden sm:inline text-[11px] text-slate-500">
-                Transparent batch pricing · No surge fees
+                Transparent pricing · Local grocery partners
               </span>
             </div>
           </div>

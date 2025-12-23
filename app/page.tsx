@@ -121,7 +121,7 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50 text-slate-900 pb-20">
-      {/* Decorative gradient blobs for 3D feel */}
+      {/* Background accents */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -top-24 -left-32 h-72 w-72 rounded-full bg-indigo-200/40 blur-3xl" />
         <div className="absolute -top-32 right-0 h-80 w-80 rounded-full bg-emerald-200/40 blur-3xl" />
@@ -164,54 +164,51 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero with 3D cards */}
+      {/* Hero */}
       <section className="border-b border-slate-200 bg-gradient-to-br from-white/90 via-slate-50 to-slate-100">
         <div className="mx-auto max-w-6xl px-6 py-10 grid md:grid-cols-[1.3fr,1fr] gap-10 items-center">
-          {/* Left: text + stacked cards */}
+          {/* Left */}
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs text-slate-600 shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>GoJack AI optimises batches for West & East Melbourne</span>
+              <span>GoJack AI balances speed and savings for every batch</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900">
-              Grocery runs with a{" "}
+              Smarter, AI‑powered{" "}
               <span className="bg-gradient-to-r from-indigo-500 to-emerald-500 bg-clip-text text-transparent">
-                3D‑smooth
+                grocery runs
               </span>{" "}
-              experience.
+              that feel effortless.
             </h1>
 
             <p className="text-sm md:text-base text-slate-600 max-w-xl">
-              A softer, layered interface that feels like real cards on a
-              countertop. Build your batch calmly while GoJack handles timing,
-              drivers, and store coordination in the background.
+              A calm interface for building your order while GoJack’s AI groups
+              nearby baskets, times dispatch, and keeps delivery fees fair.
             </p>
 
-            {/* Stacked info cards */}
-            <div className="relative mt-4 h-32">
-              <div className="absolute inset-x-6 top-6 h-24 rounded-3xl bg-slate-200/60 blur-xl" />
-              <div className="absolute left-0 right-10 top-2 h-24 rounded-3xl bg-white/80 border border-slate-200 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm flex items-center justify-between px-5">
+            {/* Stats card (white box removed, only main card kept) */}
+            <div className="relative mt-4">
+              <div className="h-24 rounded-3xl bg-white/80 border border-slate-200 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm flex items-center justify-between px-5">
                 <div>
                   <p className="text-xs text-slate-500 mb-1">
-                    Today’s live batch · West & East Melbourne
+                    Today’s live batch · Melbourne
                   </p>
                   <p className="text-2xl font-semibold text-slate-900">
                     $74.20
                   </p>
                   <p className="text-[11px] text-slate-500">
-                    Target $100 · 74% complete · Est. lock‑in 32 mins
+                    Target $100 · 74% complete · AI forecast ~32 mins to lock‑in
                   </p>
                 </div>
                 <div className="w-32 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-500 shadow-lg shadow-indigo-500/40 flex flex-col justify-center px-3 text-[11px] text-white">
-                  <p className="opacity-80">GoJack AI</p>
-                  <p className="font-semibold">Predictive batching</p>
+                  <p className="opacity-80">GoJack engine</p>
+                  <p className="font-semibold">Batch optimisation</p>
                   <p className="opacity-80 mt-1">
-                    Learns your suburb’s peak times automatically.
+                    Learns local demand to reduce your per‑order cost.
                   </p>
                 </div>
               </div>
-              <div className="absolute left-4 right-2 top-6 h-24 rounded-3xl bg-gradient-to-r from-slate-100 to-white border border-dashed border-slate-200/80 shadow-[0_12px_30px_rgba(15,23,42,0.06)]" />
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
@@ -219,18 +216,18 @@ export default function Home() {
                 href="#products"
                 className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-400/40 hover:bg-indigo-700 transition"
               >
-                Start shopping in 3D
+                Start shopping with GoJack
               </a>
               <a
                 href="#how-it-works"
                 className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/80 px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-indigo-500 hover:shadow-md transition"
               >
-                How the batching works
+                How the AI batching works
               </a>
             </div>
           </div>
 
-          {/* Right: floating product tile */}
+          {/* Right: visual preview */}
           <div className="hidden md:block">
             <div className="relative h-72">
               <div className="absolute inset-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-[0_28px_80px_rgba(15,23,42,0.5)] transform rotate-[-4deg]" />
@@ -272,8 +269,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>3D‑smooth UI · Real‑world grocery pricing</span>
-                  <span className="text-emerald-400">Batch ↑ savings</span>
+                  <span>AI schedules store & driver automatically.</span>
+                  <span className="text-emerald-400">Smarter batching</span>
                 </div>
               </div>
             </div>
@@ -310,10 +307,10 @@ export default function Home() {
           <div className="mb-5 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">
-                Scroll‑friendly 3D product grid
+                AI‑guided product browsing
               </h2>
               <p className="text-xs text-slate-500">
-                Cards lift subtly on hover so browsing feels tactile, not flat.
+                A clear grid that keeps prices and savings front and centre.
               </p>
             </div>
           </div>
@@ -414,31 +411,31 @@ export default function Home() {
       >
         <div className="mx-auto max-w-6xl px-6 py-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            Why GoJack feels different
+            How GoJack’s AI fits into your day
           </h2>
           <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 shadow-sm">
-              <p className="text-xs text-slate-500 mb-1">01 · Calm browsing</p>
-              <p className="font-medium mb-1">Layered 3D layout</p>
+              <p className="text-xs text-slate-500 mb-1">01 · Calm shopping</p>
+              <p className="font-medium mb-1">Clean, guided browsing</p>
               <p className="text-xs text-slate-600">
-                Cards, shadows, and soft gradients make the store feel physical
-                while staying fast and responsive.
+                Simple layout with clear prices and savings so you can focus on
+                what actually goes in the basket.
               </p>
             </div>
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 shadow-sm">
               <p className="text-xs text-slate-500 mb-1">02 · Smart batching</p>
-              <p className="font-medium mb-1">AI timing engine</p>
+              <p className="font-medium mb-1">AI groups orders nearby</p>
               <p className="text-xs text-slate-600">
-                GoJack forecasts when batches tip over $100 for your area, so
-                delivery estimates feel grounded, not random.
+                The engine looks at demand across suburbs and nudges batches to
+                hit the sweet spot between speed and cost.
               </p>
             </div>
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 shadow-sm">
-              <p className="text-xs text-slate-500 mb-1">03 · Local first</p>
-              <p className="font-medium mb-1">Shops you already trust</p>
+              <p className="text-xs text-slate-500 mb-1">03 · Clear delivery</p>
+              <p className="font-medium mb-1">Simple status updates</p>
               <p className="text-xs text-slate-600">
-                We plug into existing Indian grocers in West & East Melbourne,
-                keeping prices fair and selection authentic.
+                Store and driver statuses stay in sync so you always know when
+                your groceries are being packed and sent.
               </p>
             </div>
           </div>
@@ -450,7 +447,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
           <span>© {new Date().getFullYear()} GoJack</span>
           <span className="hidden sm:inline">
-            Built in Melbourne for batch‑based grocery delivery.
+            AI‑powered batch grocery delivery for Melbourne.
           </span>
         </div>
       </footer>
