@@ -1,3 +1,4 @@
+// app/admin/page.tsx
 "use client";
 
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
@@ -10,6 +11,7 @@ interface Product {
   shelf_price: number;
   image_url: string | null;
   category: string | null;
+  store_id?: string | null;
 }
 
 const CATEGORY_OPTIONS = [
@@ -21,6 +23,10 @@ const CATEGORY_OPTIONS = [
   "other",
 ];
 const STORAGE_BUCKET = "product-images";
+
+// If products.store_id is NOT NULL, set a default store id here.
+// Get it from: SELECT id FROM stores LIMIT 1;
+const DEFAULT_STORE_ID = null as string | null; // replace with real id when needed
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -44,12 +50,12 @@ export default function AdminProducts() {
     setLoading(true);
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, price, shelf_price, image_url, category")
+      .select("id, name, price, shelf_price, image_url, category, store_id")
       .order("name");
 
     if (error) {
       console.error("fetchProducts error", error);
-      alert("Failed to load products");
+      alert("Failed to load products: " + error.message);
       setLoading(false);
       return;
     }
@@ -62,6 +68,7 @@ export default function AdminProducts() {
         shelf_price: Number(p.shelf_price ?? p.price ?? 0),
         image_url: p.image_url ?? null,
         category: p.category ?? null,
+        store_id: p.store_id ?? null,
       })) || [];
 
     setProducts(normalised);
@@ -85,6 +92,7 @@ export default function AdminProducts() {
         shelf_price: product.shelf_price,
         image_url: product.image_url,
         category: product.category,
+        store_id: product.store_id ?? DEFAULT_STORE_ID,
       })
       .eq("id", product.id);
 
@@ -92,7 +100,7 @@ export default function AdminProducts() {
 
     if (error) {
       console.error("saveProduct error", error);
-      alert("Failed to save product");
+      alert("Failed to save product: " + error.message);
       return;
     }
 
@@ -106,7 +114,7 @@ export default function AdminProducts() {
 
     if (error) {
       console.error("deleteProduct error", error);
-      alert("Failed to delete product");
+      alert("Failed to delete product: " + error.message);
       return;
     }
 
@@ -132,7 +140,7 @@ export default function AdminProducts() {
 
     if (uploadError) {
       console.error("upload error", uploadError);
-      alert("Failed to upload image");
+      alert("Failed to upload image: " + uploadError.message);
       return;
     }
 
@@ -149,7 +157,7 @@ export default function AdminProducts() {
 
     if (updateError) {
       console.error("update image_url error", updateError);
-      alert("Failed to save image URL");
+      alert("Failed to save image URL: " + updateError.message);
       return;
     }
   }
@@ -167,7 +175,7 @@ export default function AdminProducts() {
 
     setCreating(true);
 
-    const { error } = await supabase.from("products").insert({
+    const payload: any = {
       name: newProduct.name,
       price: parseFloat(newProduct.price),
       shelf_price: newProduct.shelf_price
@@ -175,13 +183,19 @@ export default function AdminProducts() {
         : parseFloat(newProduct.price),
       image_url: newProduct.image_url || null,
       category: newProduct.category || null,
-    });
+    };
+
+    if (DEFAULT_STORE_ID) {
+      payload.store_id = DEFAULT_STORE_ID;
+    }
+
+    const { error } = await supabase.from("products").insert(payload);
 
     setCreating(false);
 
     if (error) {
       console.error("create product error", error);
-      alert("Failed to create product");
+      alert("Create failed: " + error.message);
       return;
     }
 

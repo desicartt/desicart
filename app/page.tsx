@@ -12,6 +12,7 @@ interface ProductRow {
   shelf_price: number | string | null;
   image_url?: string | null;
   category?: string | null;
+  store_id?: string | null;
 }
 
 interface Product {
@@ -21,6 +22,7 @@ interface Product {
   shelf_price: number;
   image_url?: string | null;
   category?: string | null;
+  store_id?: string | null;
 }
 
 interface CartItem extends Product {
@@ -45,7 +47,7 @@ export default function Home() {
       .order("name");
 
     if (error) {
-      console.error(error);
+      console.error("fetchProducts error", error);
       setLoading(false);
       return;
     }
@@ -58,6 +60,7 @@ export default function Home() {
         shelf_price: Number(p.shelf_price ?? p.price ?? 0),
         image_url: p.image_url ?? null,
         category: p.category ?? null,
+        store_id: p.store_id ?? null,
       })) || [];
 
     setProducts(normalised);
@@ -149,7 +152,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero (shorter, more whitespace) */}
+      {/* Hero */}
       <section className="border-b border-slate-200 bg-gradient-to-b from-slate-50 via-white to-slate-50">
         <div className="mx-auto max-w-6xl px-6 py-10 grid md:grid-cols-[1.3fr,1fr] gap-10 items-center">
           <div className="space-y-4">
@@ -163,9 +166,8 @@ export default function Home() {
               without the chaos.
             </h1>
             <p className="text-sm md:text-base text-slate-600 max-w-xl">
-              Simple, clean grocery ordering. Browse relaxed, add items to your
-              cart, and let GoJack batch your order with nearby shoppers so
-              everyone saves on delivery.
+              Browse calmly, add items to your cart, and let GoJack batch your
+              order with nearby shoppers so everyone saves on delivery.
             </p>
             <div className="flex flex-wrap gap-3 pt-1">
               <a
@@ -201,9 +203,8 @@ export default function Home() {
                 <div className="h-full w-[74%] bg-gradient-to-r from-indigo-500 to-emerald-400" />
               </div>
               <p className="text-[11px] text-slate-500">
-                GoJack quietly coordinates store, driver, and customers in the
-                background. You just see when your batch is ready and on the
-                road.
+                GoJack quietly coordinates store, driver, and customers. You
+                just see when your batch is ready and on the road.
               </p>
             </div>
           </div>
@@ -230,7 +231,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Products grid with more spacing */}
+      {/* Products */}
       <section id="products" className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="mb-4 flex items-center justify-between">
@@ -239,8 +240,7 @@ export default function Home() {
                 Fresh items for this batch
               </h2>
               <p className="text-xs text-slate-500">
-                Scroll comfortably; your cart sticks to the bottom so you never
-                lose track.
+                Scroll comfortably; your cart stays visible at the bottom.
               </p>
             </div>
           </div>
@@ -344,24 +344,23 @@ export default function Home() {
               <p className="text-xs text-slate-500">01 · Shop</p>
               <p className="font-medium">Browse calmly</p>
               <p className="text-xs text-slate-600">
-                Clean layout, no noise. Build your basket while GoJack tracks
-                how close the batch is to ready.
+                Build your basket in a clean interface while the system tracks
+                batch progress.
               </p>
             </div>
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
               <p className="text-xs text-slate-500">02 · Batch</p>
               <p className="font-medium">AI groups orders</p>
               <p className="text-xs text-slate-600">
-                Orders from nearby customers are grouped automatically to hit
-                the sweet spot between speed and savings.
+                Orders from nearby customers are grouped to balance cost and
+                speed.
               </p>
             </div>
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
               <p className="text-xs text-slate-500">03 · Deliver</p>
               <p className="font-medium">Track at a glance</p>
               <p className="text-xs text-slate-600">
-                Simple status updates from store and driver – no cluttered map,
-                just clear timing.
+                Clear statuses from store and driver – no clutter, just timing.
               </p>
             </div>
           </div>
