@@ -408,18 +408,22 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Animated flow – desktop, teal/amber palette */}
+          {/* Animated flow – desktop, overlapped cards */}
           <div className="hidden md:block">
-            <div className="relative h-72 rounded-3xl bg-slate-950 text-slate-50 shadow-xl border border-slate-800 overflow-hidden">
+            <div className="relative h-72 w-full rounded-3xl bg-slate-950 text-slate-50 shadow-xl border border-slate-900 overflow-hidden">
+              {/* Inner dotted frame */}
               <div className="absolute inset-6 rounded-2xl border border-dashed border-slate-700" />
-              <div className="absolute left-10 right-10 top-1/2 h-px bg-gradient-to-r from-teal-400 via-amber-400 to-teal-300" />
 
-              <div className="absolute left-6 top-1/2 -translate-y-1/2">
-                <div className="rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 shadow-lg w-44">
+              {/* Gradient line */}
+              <div className="absolute left-10 right-10 top-1/2 h-px bg-gradient-to-r from-teal-400 via-emerald-400 to-amber-400" />
+
+              {/* Card 1 – You */}
+              <div className="absolute left-16 top-1/2 -translate-y-1/2 -translate-x-6">
+                <div className="rounded-2xl bg-slate-900/80 border border-slate-700/80 px-4 py-3 shadow-lg shadow-slate-900/40 min-w-[190px]">
                   <p className="text-[11px] text-slate-400 mb-1">
                     Step 1 · You
                   </p>
-                  <p className="text-xs font-medium">
+                  <p className="text-xs font-semibold text-slate-50">
                     Add items at your own pace.
                   </p>
                   <p className="text-[11px] text-slate-500 mt-1">
@@ -428,26 +432,28 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="absolute left-1/2 -translate-x-1/2 top-9">
-                <div className="rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-amber-500 px-4 py-3 shadow-xl w-48">
+              {/* Card 2 – AI */}
+              <div className="absolute left-1/2 top-6 -translate-x-1/2 ai-card-float">
+                <div className="rounded-3xl bg-gradient-to-br from-teal-500 via-emerald-500 to-amber-400 px-5 py-4 shadow-2xl shadow-emerald-500/40 min-w-[220px]">
                   <p className="text-[11px] text-slate-100 mb-1">
                     Step 2 · GoJack AI
                   </p>
-                  <p className="text-xs font-semibold">
+                  <p className="text-sm font-semibold text-white">
                     Groups nearby orders into smart batches.
                   </p>
-                  <p className="text-[11px] text-slate-100/80 mt-1">
+                  <p className="text-[11px] text-emerald-50 mt-1">
                     Watches value and timing in your suburb.
                   </p>
                 </div>
               </div>
 
-              <div className="absolute right-6 bottom-10">
-                <div className="rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 shadow-lg w-48">
+              {/* Card 3 – Store & driver */}
+              <div className="absolute right-10 bottom-8">
+                <div className="rounded-2xl bg-slate-900/85 border border-slate-700/80 px-4 py-3 shadow-lg shadow-slate-900/40 min-w-[210px]">
                   <p className="text-[11px] text-slate-400 mb-1">
                     Step 3 · Store & driver
                   </p>
-                  <p className="text-xs font-medium">
+                  <p className="text-xs font-semibold text-slate-50">
                     Partner shop packs, driver collects.
                   </p>
                   <p className="text-[11px] text-slate-500 mt-1">
@@ -456,18 +462,14 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="absolute right-8 top-1/2 -translate-y-1/2">
-                <div className="flex items-center gap-2">
-                  <span className="relative inline-flex h-7 w-7 items-center justify-center">
-                    <span className="absolute inline-flex h-7 w-7 rounded-full bg-teal-500/40 animate-ping" />
-                    <span className="relative inline-flex h-7 w-7 rounded-full bg-teal-500 text-[11px] text-white font-semibold items-center justify-center">
-                      GO
-                    </span>
+              {/* GO pill under AI card */}
+              <div className="absolute left-1/2 top-[4.5rem] -translate-x-1/2 translate-y-full">
+                <span className="relative inline-flex h-7 w-7 items-center justify-center">
+                  <span className="absolute inline-flex h-7 w-7 rounded-full bg-teal-500/40 animate-ping" />
+                  <span className="relative inline-flex h-7 w-7 rounded-full bg-teal-500 text-[11px] text-white font-semibold items-center justify-center">
+                    GO
                   </span>
-                  <span className="text-[11px] text-teal-300">
-                    Batch locked in and ready to dispatch.
-                  </span>
-                </div>
+                </span>
               </div>
             </div>
           </div>
@@ -757,6 +759,18 @@ export default function Home() {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+        @keyframes float-soft {
+          0%,
+          100% {
+            transform: translateX(-50%) translateY(0);
+          }
+          50% {
+            transform: translateX(-50%) translateY(-6px);
+          }
+        }
+        .ai-card-float {
+          animation: float-soft 8s ease-in-out infinite;
         }
       `}</style>
     </div>
