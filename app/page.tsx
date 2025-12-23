@@ -408,52 +408,64 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Animated flow – desktop */}
+          {/* Animated flow – desktop, teal/amber palette */}
           <div className="hidden md:block">
             <div className="relative h-72 rounded-3xl bg-slate-950 text-slate-50 shadow-xl border border-slate-800 overflow-hidden">
               <div className="absolute inset-6 rounded-2xl border border-dashed border-slate-700" />
-              <div className="absolute left-10 right-10 top-1/2 h-px bg-gradient-to-r from-teal-400 via-amber-400 to-sky-400" />
+              <div className="absolute left-10 right-10 top-1/2 h-px bg-gradient-to-r from-teal-400 via-amber-400 to-teal-300" />
 
-              <div className="absolute left-8 top-1/2 -translate-y-1/2">
-                <div className="rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 shadow-lg">
+              <div className="absolute left-6 top-1/2 -translate-y-1/2">
+                <div className="rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 shadow-lg w-44">
                   <p className="text-[11px] text-slate-400 mb-1">
                     Step 1 · You
                   </p>
                   <p className="text-xs font-medium">
-                    Add items without thinking about drivers.
+                    Add items at your own pace.
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    No chasing drivers or timers.
                   </p>
                 </div>
               </div>
 
               <div className="absolute left-1/2 -translate-x-1/2 top-9">
-                <div className="rounded-2xl bg-gradient-to-br from-teal-500 to-amber-500 px-4 py-3 shadow-xl">
+                <div className="rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-amber-500 px-4 py-3 shadow-xl w-48">
                   <p className="text-[11px] text-slate-100 mb-1">
                     Step 2 · GoJack AI
                   </p>
                   <p className="text-xs font-semibold">
-                    Groups nearby orders into batches.
+                    Groups nearby orders into smart batches.
+                  </p>
+                  <p className="text-[11px] text-slate-100/80 mt-1">
+                    Watches value and timing in your suburb.
                   </p>
                 </div>
               </div>
 
               <div className="absolute right-6 bottom-10">
-                <div className="rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 shadow-lg w-44">
+                <div className="rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 shadow-lg w-48">
                   <p className="text-[11px] text-slate-400 mb-1">
                     Step 3 · Store & driver
                   </p>
                   <p className="text-xs font-medium">
-                    Groceries packed, driver collects, batch goes out.
+                    Partner shop packs, driver collects.
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Batch goes out in one clear window.
                   </p>
                 </div>
               </div>
 
               <div className="absolute right-8 top-1/2 -translate-y-1/2">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 rounded-full bg-teal-500 text-[11px] text-white items-center justify-center">
-                    GO
+                  <span className="relative inline-flex h-7 w-7 items-center justify-center">
+                    <span className="absolute inline-flex h-7 w-7 rounded-full bg-teal-500/40 animate-ping" />
+                    <span className="relative inline-flex h-7 w-7 rounded-full bg-teal-500 text-[11px] text-white font-semibold items-center justify-center">
+                      GO
+                    </span>
                   </span>
                   <span className="text-[11px] text-teal-300">
-                    Batch ready to dispatch
+                    Batch locked in and ready to dispatch.
                   </span>
                 </div>
               </div>
