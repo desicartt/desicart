@@ -117,26 +117,38 @@ export default function Home() {
       ? products
       : products.filter((p) => p.category === selectedCategory);
 
+  const heroSample = products[0];
+
   return (
-    <div className="relative min-h-screen bg-slate-50 text-slate-900 pb-20">
+    <div className="relative min-h-screen bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50 text-slate-900 pb-20">
+      {/* Decorative gradient blobs for 3D feel */}
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute -top-24 -left-32 h-72 w-72 rounded-full bg-indigo-200/40 blur-3xl" />
+        <div className="absolute -top-32 right-0 h-80 w-80 rounded-full bg-emerald-200/40 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-xl sticky top-0 z-40">
+      <header className="border-b border-slate-200 bg-white/70 backdrop-blur-xl sticky top-0 z-40">
         <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-md">
-              <span className="text-white text-lg font-bold">GJ</span>
+            <div className="relative h-9 w-9">
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/40" />
+              <div className="relative h-full w-full rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-700 flex items-center justify-center text-white text-lg font-bold">
+                GJ
+              </div>
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-900">GoJack</p>
               <p className="text-xs text-slate-500">
-                AI‑powered batch grocery network
+                AI‑powered batch grocery for Melbourne
               </p>
             </div>
           </div>
 
           <button
             onClick={() => setShowCart(true)}
-            className="relative hidden sm:flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:border-indigo-500 hover:shadow-sm transition"
+            className="relative hidden sm:flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-medium text-slate-800 shadow-sm hover:border-indigo-500 hover:shadow-md transition"
           >
             <span className="text-lg">🛒</span>
             <span>Cart</span>
@@ -152,67 +164,125 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="border-b border-slate-200 bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      {/* Hero with 3D cards */}
+      <section className="border-b border-slate-200 bg-gradient-to-br from-white/90 via-slate-50 to-slate-100">
         <div className="mx-auto max-w-6xl px-6 py-10 grid md:grid-cols-[1.3fr,1fr] gap-10 items-center">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 shadow-sm">
+          {/* Left: text + stacked cards */}
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs text-slate-600 shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              GoJack AI predicts the best batch timing for your suburb
+              <span>GoJack AI optimises batches for West & East Melbourne</span>
             </div>
+
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900">
-              Smarter{" "}
-              <span className="text-indigo-600">AI‑driven grocery runs</span>,
-              without the chaos.
+              Grocery runs with a{" "}
+              <span className="bg-gradient-to-r from-indigo-500 to-emerald-500 bg-clip-text text-transparent">
+                3D‑smooth
+              </span>{" "}
+              experience.
             </h1>
+
             <p className="text-sm md:text-base text-slate-600 max-w-xl">
-              Browse calmly, add items to your cart, and let GoJack batch your
-              order with nearby shoppers so everyone saves on delivery.
+              A softer, layered interface that feels like real cards on a
+              countertop. Build your batch calmly while GoJack handles timing,
+              drivers, and store coordination in the background.
             </p>
-            <div className="flex flex-wrap gap-3 pt-1">
+
+            {/* Stacked info cards */}
+            <div className="relative mt-4 h-32">
+              <div className="absolute inset-x-6 top-6 h-24 rounded-3xl bg-slate-200/60 blur-xl" />
+              <div className="absolute left-0 right-10 top-2 h-24 rounded-3xl bg-white/80 border border-slate-200 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm flex items-center justify-between px-5">
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">
+                    Today’s live batch · West & East Melbourne
+                  </p>
+                  <p className="text-2xl font-semibold text-slate-900">
+                    $74.20
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    Target $100 · 74% complete · Est. lock‑in 32 mins
+                  </p>
+                </div>
+                <div className="w-32 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-500 shadow-lg shadow-indigo-500/40 flex flex-col justify-center px-3 text-[11px] text-white">
+                  <p className="opacity-80">GoJack AI</p>
+                  <p className="font-semibold">Predictive batching</p>
+                  <p className="opacity-80 mt-1">
+                    Learns your suburb’s peak times automatically.
+                  </p>
+                </div>
+              </div>
+              <div className="absolute left-4 right-2 top-6 h-24 rounded-3xl bg-gradient-to-r from-slate-100 to-white border border-dashed border-slate-200/80 shadow-[0_12px_30px_rgba(15,23,42,0.06)]" />
+            </div>
+
+            <div className="flex flex-wrap gap-3 pt-2">
               <a
                 href="#products"
-                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition"
+                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-400/40 hover:bg-indigo-700 transition"
               >
-                Start shopping with GoJack
+                Start shopping in 3D
               </a>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-indigo-500 transition bg-white"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/80 px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-indigo-500 hover:shadow-md transition"
               >
-                How it works
+                How the batching works
               </a>
             </div>
           </div>
 
+          {/* Right: floating product tile */}
           <div className="hidden md:block">
-            <div className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-md space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-slate-500">
-                  Live batch · West Melbourne
-                </p>
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] text-emerald-700 font-medium">
-                  AI forecast
-                </span>
+            <div className="relative h-72">
+              <div className="absolute inset-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-[0_28px_80px_rgba(15,23,42,0.5)] transform rotate-[-4deg]" />
+              <div className="absolute inset-4 rounded-3xl bg-slate-950 border border-slate-700/80 shadow-[0_22px_60px_rgba(15,23,42,0.6)] flex flex-col justify-between p-5 transform rotate-[1.5deg]">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-medium text-emerald-400">
+                    Live preview · GoJack cart
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    {cartTotalItems} item
+                    {cartTotalItems !== 1 ? "s" : ""} · $
+                    {cartTotalValue.toFixed(2)}
+                  </p>
+                </div>
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="h-16 w-16 rounded-2xl bg-slate-800 flex items-center justify-center overflow-hidden">
+                    {heroSample?.image_url ? (
+                      <img
+                        src={heroSample.image_url}
+                        alt={heroSample.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
+                        GoJack
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-slate-300 line-clamp-2 max-w-[180px]">
+                      {heroSample?.name || "Sample pantry item"}
+                    </p>
+                    <p className="text-sm font-semibold text-emerald-400">
+                      ${heroSample ? heroSample.price.toFixed(2) : "5.90"}
+                    </p>
+                    <div className="h-1.5 w-28 rounded-full bg-slate-700 overflow-hidden">
+                      <div className="h-full w-2/3 bg-gradient-to-r from-indigo-500 to-emerald-400" />
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>3D‑smooth UI · Real‑world grocery pricing</span>
+                  <span className="text-emerald-400">Batch ↑ savings</span>
+                </div>
               </div>
-              <p className="text-3xl font-semibold text-slate-900">$74.20</p>
-              <p className="text-xs text-slate-500">
-                \$100 target · 74% complete
-              </p>
-              <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full w-[74%] bg-gradient-to-r from-indigo-500 to-emerald-400" />
-              </div>
-              <p className="text-[11px] text-slate-500">
-                GoJack quietly coordinates store, driver, and customers. You
-                just see when your batch is ready and on the road.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Category pills */}
-      <section className="bg-white border-b border-slate-200 sticky top-[72px] z-30">
+      <section className="bg-white/90 border-b border-slate-200 sticky top-[72px] z-30 backdrop-blur">
         <div className="mx-auto max-w-6xl px-6 py-3 flex overflow-x-auto gap-3 scrollbar-hide">
           {categories.map((cat) => (
             <button
@@ -220,8 +290,8 @@ export default function Home() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition ${
                 selectedCategory === cat.id
-                  ? "bg-indigo-600 text-white"
-                  : "bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-500"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-400/40"
+                  : "bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-500 hover:bg-white"
               }`}
             >
               <span className="mr-2">{cat.icon}</span>
@@ -232,15 +302,18 @@ export default function Home() {
       </section>
 
       {/* Products */}
-      <section id="products" className="bg-slate-50">
+      <section
+        id="products"
+        className="bg-gradient-to-b from-slate-50 to-slate-100"
+      >
         <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-5 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">
-                Fresh items for this batch
+                Scroll‑friendly 3D product grid
               </h2>
               <p className="text-xs text-slate-500">
-                Scroll comfortably; your cart stays visible at the bottom.
+                Cards lift subtly on hover so browsing feels tactile, not flat.
               </p>
             </div>
           </div>
@@ -264,7 +337,7 @@ export default function Home() {
               </p>
               <button
                 onClick={() => setSelectedCategory("all")}
-                className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+                className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white shadow-md shadow-indigo-400/40 hover:bg-indigo-700 transition"
               >
                 View all products
               </button>
@@ -282,11 +355,11 @@ export default function Home() {
                 return (
                   <div
                     key={product.id}
-                    className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-500/60 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col"
+                    className="group relative bg-white/90 border border-slate-200 rounded-2xl shadow-sm hover:shadow-[0_16px_40px_rgba(15,23,42,0.16)] hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col backdrop-blur-sm"
                   >
                     <div className="relative h-36 md:h-40 bg-slate-100 flex items-center justify-center overflow-hidden">
                       {discount > 0 && (
-                        <div className="absolute top-2 left-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                        <div className="absolute top-2 left-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
                           {discount}% OFF
                         </div>
                       )}
@@ -294,13 +367,14 @@ export default function Home() {
                         <img
                           src={product.image_url}
                           alt={product.name}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                       ) : (
                         <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
                           GoJack
                         </div>
                       )}
+                      <div className="pointer-events-none absolute inset-x-4 bottom-0 h-10 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="p-3 flex-1 flex flex-col justify-between gap-2">
                       <h3 className="text-xs font-medium text-slate-900 line-clamp-2 min-h-[2.4rem]">
@@ -319,7 +393,7 @@ export default function Home() {
                         </div>
                         <button
                           onClick={() => addToCart(product)}
-                          className="rounded-full bg-indigo-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-indigo-700 transition"
+                          className="rounded-full bg-indigo-600 px-3 py-1.5 text-[11px] font-medium text-white shadow-sm shadow-indigo-400/40 hover:bg-indigo-700 transition"
                         >
                           Add
                         </button>
@@ -334,33 +408,37 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="border-t border-slate-200 bg-white">
+      <section
+        id="how-it-works"
+        className="border-t border-slate-200 bg-white/90 backdrop-blur"
+      >
         <div className="mx-auto max-w-6xl px-6 py-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            How GoJack fits into your day
+            Why GoJack feels different
           </h2>
           <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
-            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
-              <p className="text-xs text-slate-500">01 · Shop</p>
-              <p className="font-medium">Browse calmly</p>
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 shadow-sm">
+              <p className="text-xs text-slate-500 mb-1">01 · Calm browsing</p>
+              <p className="font-medium mb-1">Layered 3D layout</p>
               <p className="text-xs text-slate-600">
-                Build your basket in a clean interface while the system tracks
-                batch progress.
+                Cards, shadows, and soft gradients make the store feel physical
+                while staying fast and responsive.
               </p>
             </div>
-            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
-              <p className="text-xs text-slate-500">02 · Batch</p>
-              <p className="font-medium">AI groups orders</p>
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 shadow-sm">
+              <p className="text-xs text-slate-500 mb-1">02 · Smart batching</p>
+              <p className="font-medium mb-1">AI timing engine</p>
               <p className="text-xs text-slate-600">
-                Orders from nearby customers are grouped to balance cost and
-                speed.
+                GoJack forecasts when batches tip over $100 for your area, so
+                delivery estimates feel grounded, not random.
               </p>
             </div>
-            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-1">
-              <p className="text-xs text-slate-500">03 · Deliver</p>
-              <p className="font-medium">Track at a glance</p>
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 shadow-sm">
+              <p className="text-xs text-slate-500 mb-1">03 · Local first</p>
+              <p className="font-medium mb-1">Shops you already trust</p>
               <p className="text-xs text-slate-600">
-                Clear statuses from store and driver – no clutter, just timing.
+                We plug into existing Indian grocers in West & East Melbourne,
+                keeping prices fair and selection authentic.
               </p>
             </div>
           </div>
@@ -372,13 +450,13 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
           <span>© {new Date().getFullYear()} GoJack</span>
           <span className="hidden sm:inline">
-            AI‑powered batch grocery delivery for modern suburbs.
+            Built in Melbourne for batch‑based grocery delivery.
           </span>
         </div>
       </footer>
 
       {/* Fixed bottom cart bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 py-2 shadow-[0_-4px_12px_rgba(15,23,42,0.08)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 px-4 py-2 shadow-[0_-6px_18px_rgba(15,23,42,0.16)] backdrop-blur">
         <div className="mx-auto max-w-6xl flex items-center justify-between text-xs sm:text-sm">
           <div className="flex items-center gap-3">
             <span className="text-lg">🛒</span>
@@ -387,13 +465,13 @@ export default function Home() {
                 {cartTotalItems} item{cartTotalItems !== 1 ? "s" : ""} in cart
               </p>
               <p className="text-[11px] text-slate-500">
-                Current batch value: ${cartTotalValue.toFixed(2)} · Target \$100
+                Current batch value: ${cartTotalValue.toFixed(2)} · Target $100
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowCart(true)}
-            className="rounded-full bg-indigo-600 px-4 py-1.5 text-[11px] sm:text-xs font-medium text-white hover:bg-indigo-700 transition"
+            className="rounded-full bg-indigo-600 px-4 py-1.5 text-[11px] sm:text-xs font-medium text-white shadow-md shadow-indigo-400/40 hover:bg-indigo-700 transition"
           >
             View cart & checkout
           </button>
