@@ -22,11 +22,12 @@ const CATEGORY_OPTIONS = [
   "beverages",
   "other",
 ];
+
+// IMPORTANT: set this to the exact bucket name you created in Supabase
 const STORAGE_BUCKET = "product-images";
 
-// If products.store_id is NOT NULL, set a default store id here.
-// Get it from: SELECT id FROM stores LIMIT 1;
-const DEFAULT_STORE_ID = null as string | null; // replace with real id when needed
+// If products.store_id is NOT NULL, set a default store id here (from stores table)
+const DEFAULT_STORE_ID = null as string | null;
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
