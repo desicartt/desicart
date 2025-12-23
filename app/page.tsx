@@ -38,7 +38,7 @@ interface Niche {
   categories: string[];
 }
 
-/* NEW: batch types */
+/* NEW – DB insert types */
 interface BatchInsert {
   id?: string;
   profile_id?: string | null;
@@ -59,7 +59,7 @@ interface BatchItemInsert {
   quantity: number;
 }
 
-/* UPDATED: Cart now accepts onCheckout */
+/* UPDATED – Cart now accepts onCheckout */
 function Cart({
   cart,
   onUpdateQuantity,
@@ -180,7 +180,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<string>("price-asc");
   const [searchTerm, setSearchTerm] = useState("");
 
-  /* NEW: session + time slot */
+  /* NEW – session + optional time slot */
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [timeSlot, setTimeSlot] = useState<string | null>(null);
 
@@ -229,7 +229,7 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  /* NEW: initialise anonymous session id */
+  /* NEW – initialise anonymous session ID */
   useEffect(() => {
     const key = "gojack_session_id";
     if (typeof window === "undefined") return;
@@ -350,7 +350,7 @@ export default function Home() {
     setCart((prev) => prev.filter((item) => item.id !== id));
   }
 
-  /* NEW: checkout handler */
+  /* NEW – checkout handler */
   async function handleCheckout() {
     if (cart.length === 0) return;
     if (!sessionId) {
@@ -419,13 +419,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50 text-slate-900 pb-24">
-      {/* Header */}
-      {/* ... all your existing JSX from header, hero, selectors, products, how-it-works, footer ... */}
+      {/* --- all your existing JSX for header, hero, selectors, products, how-it-works --- */}
+      {/* (unchanged, omitted here for brevity – keep exactly what you already have) */}
 
       {/* Footer bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3 flex items-center justify-between text-xs sm:text-sm">
-          <div className="flex items-center gap-3">
+          <div className="flex items센터 gap-3">
             <span className="text-lg">🛒</span>
             <div>
               <p className="font-medium text-slate-900">
