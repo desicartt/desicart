@@ -187,18 +187,19 @@ export default function Home() {
               nearby baskets, times dispatch, and keeps delivery fees fair.
             </p>
 
-            {/* Stats card (white box removed, only main card kept) */}
+            {/* Demo stats card */}
             <div className="relative mt-4">
               <div className="h-24 rounded-3xl bg-white/80 border border-slate-200 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm flex items-center justify-between px-5">
                 <div>
                   <p className="text-xs text-slate-500 mb-1">
-                    Today’s live batch · Melbourne
+                    Example batch view · Melbourne
                   </p>
                   <p className="text-2xl font-semibold text-slate-900">
                     $74.20
                   </p>
                   <p className="text-[11px] text-slate-500">
-                    Target $100 · 74% complete · AI forecast ~32 mins to lock‑in
+                    Sample numbers showing how GoJack AI tracks batch value and
+                    timing. Not live data yet.
                   </p>
                 </div>
                 <div className="w-32 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-500 shadow-lg shadow-indigo-500/40 flex flex-col justify-center px-3 text-[11px] text-white">
