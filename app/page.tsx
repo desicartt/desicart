@@ -228,50 +228,73 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: visual preview */}
+          {/* Right: animated GoJack flow */}
           <div className="hidden md:block">
             <div className="relative h-72">
-              <div className="absolute inset-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-[0_28px_80px_rgba(15,23,42,0.5)] transform rotate-[-4deg]" />
-              <div className="absolute inset-4 rounded-3xl bg-slate-950 border border-slate-700/80 shadow-[0_22px_60px_rgba(15,23,42,0.6)] flex flex-col justify-between p-5 transform rotate-[1.5deg]">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-emerald-400">
-                    Live preview · GoJack cart
-                  </p>
-                  <p className="text-[11px] text-slate-400">
-                    {cartTotalItems} item
-                    {cartTotalItems !== 1 ? "s" : ""} · $
-                    {cartTotalValue.toFixed(2)}
-                  </p>
-                </div>
-                <div className="mt-3 flex items-center gap-3">
-                  <div className="h-16 w-16 rounded-2xl bg-slate-800 flex items-center justify-center overflow-hidden">
-                    {heroSample?.image_url ? (
-                      <img
-                        src={heroSample.image_url}
-                        alt={heroSample.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                        GoJack
-                      </span>
-                    )}
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-slate-300 line-clamp-2 max-w-[180px]">
-                      {heroSample?.name || "Sample pantry item"}
-                    </p>
-                    <p className="text-sm font-semibold text-emerald-400">
-                      ${heroSample ? heroSample.price.toFixed(2) : "5.90"}
-                    </p>
-                    <div className="h-1.5 w-28 rounded-full bg-slate-700 overflow-hidden">
-                      <div className="h-full w-2/3 bg-gradient-to-r from-indigo-500 to-emerald-400" />
+              <div className="absolute inset-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-[0_28px_80px_rgba(15,23,42,0.5)]" />
+              <div className="absolute inset-4 rounded-3xl bg-slate-950/95 border border-slate-700/80 shadow-[0_22px_60px_rgba(15,23,42,0.6)] overflow-hidden">
+                <div className="h-full w-full relative">
+                  {/* Dotted path */}
+                  <div className="absolute inset-10 border border-dashed border-slate-700 rounded-2xl" />
+                  <div className="absolute left-10 top-1/2 -translate-y-1/2 h-0.5 w-[55%] bg-gradient-to-r from-emerald-400 via-indigo-400 to-sky-400 opacity-60 blur-[1px]" />
+
+                  {/* Customer card */}
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 -translate-x-4 animate-float-slow">
+                    <div className="rounded-2xl bg-slate-900 border border-slate-600/70 px-4 py-3 shadow-lg shadow-slate-900/60 w-40">
+                      <p className="text-[11px] text-slate-400 mb-1">
+                        Step 1 · Customer
+                      </p>
+                      <p className="text-xs font-medium text-slate-50">
+                        You add items at calm pace.
+                      </p>
+                      <p className="mt-1 text-[11px] text-slate-400">
+                        GoJack watches total, not every click.
+                      </p>
                     </div>
                   </div>
-                </div>
-                <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>AI schedules store & driver automatically.</span>
-                  <span className="text-emerald-400">Smarter batching</span>
+
+                  {/* GoJack AI card */}
+                  <div className="absolute left-1/2 top-8 -translate-x-1/2 animate-float-medium">
+                    <div className="rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-500 px-4 py-3 shadow-xl shadow-emerald-500/50 w-44">
+                      <p className="text-[11px] text-emerald-100/90 mb-1">
+                        Step 2 · GoJack AI
+                      </p>
+                      <p className="text-xs font-semibold text-white">
+                        Groups nearby orders into smart batches.
+                      </p>
+                      <p className="mt-1 text-[11px] text-emerald-100/80">
+                        Predicts when to lock in and dispatch.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Store & driver card */}
+                  <div className="absolute right-4 bottom-10 animate-float-fast">
+                    <div className="rounded-2xl bg-slate-900 border border-slate-600/70 px-4 py-3 shadow-lg shadow-slate-900/60 w-44">
+                      <p className="text-[11px] text-slate-400 mb-1">
+                        Step 3 · Store & driver
+                      </p>
+                      <p className="text-xs font-medium text-slate-50">
+                        Partner shop prepares, driver collects.
+                      </p>
+                      <p className="mt-1 text-[11px] text-slate-400">
+                        Clear statuses, no noisy maps.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Little pulsing indicator */}
+                  <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                    <div className="relative">
+                      <span className="absolute inline-flex h-7 w-7 rounded-full bg-emerald-400/40 animate-ping" />
+                      <span className="relative inline-flex h-7 w-7 rounded-full bg-emerald-500 text-[11px] text-white items-center justify-center">
+                        GO
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[10px] text-emerald-300">
+                      Batch ready
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -498,6 +521,48 @@ export default function Home() {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+        @keyframes float-slow {
+          0% {
+            transform: translateY(-50%) translateX(-1px);
+          }
+          50% {
+            transform: translateY(-54%) translateX(1px);
+          }
+          100% {
+            transform: translateY(-50%) translateX(-1px);
+          }
+        }
+        @keyframes float-medium {
+          0% {
+            transform: translateX(-50%) translateY(0px);
+          }
+          50% {
+            transform: translateX(-50%) translateY(-6px);
+          }
+          100% {
+            transform: translateX(-50%) translateY(0px);
+          }
+        }
+        @keyframes float-fast {
+          0% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-8px);
+          }
+          100% {
+            transform: translateY(0px);
+          }
+        }
+        .animate-float-slow {
+          animation: float-slow 10s ease-in-out infinite;
+        }
+        .animate-float-medium {
+          animation: float-medium 8s ease-in-out infinite;
+        }
+        .animate-float-fast {
+          animation: float-fast 6s ease-in-out infinite;
         }
       `}</style>
     </div>
