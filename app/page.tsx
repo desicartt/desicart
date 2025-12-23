@@ -2,8 +2,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
-import Cart from "@/components/Cart";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 interface ProductRow {
   id: string;
@@ -39,6 +42,110 @@ interface Niche {
   categories: string[];
 }
 
+// Inline Cart Component
+function Cart({
+  cart,
+  onUpdateQuantity,
+  onRemove,
+  onClose,
+}: {
+  cart: CartItem[];
+  onUpdateQuantity: (id: string, quantity: number) => void;
+  onRemove: (id: string) => void;
+  onClose: () => void;
+}) {
+  const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end justify-center p-4">
+      <div className="bg-white w-full max-w-md max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden">
+        <div className="p-6 border-b border-slate-200">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-900">Your Batch</h2>
+            <button
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-900 p-1"
+            >
+              ✕
+            </button>
+          </div>
+          <p className="text-sm text-slate-500 mt-1">{cart.length} items</p>
+        </div>
+
+        <div className="p-6 max-h-96 overflow-y-auto">
+          {cart.map((item) => (
+            <div
+              key={item.id}
+              className="flex gap-4 py-4 border-b border-slate-100 last:border-b-0"
+            >
+              <div className="w-20 h-20 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                {item.image_url ? (
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xs uppercase tracking-wide text-slate-500 font-medium">
+                    {item.brand || "GJ"}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-slate-900 line-clamp-2">
+                  {item.name}
+                </p>
+                <p className="text-xs text-slate-500">{item.brand}</p>
+                <p className="text-base font-bold text-emerald-600 mt-1">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                  className="w-10 h-10 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 text-sm font-medium transition-colors"
+                >
+                  -
+                </button>
+                <span className="w-10 text-center font-mono text-sm font-bold bg-slate-100 rounded px-2 py-1">
+                  {item.quantity}
+                </span>
+                <button
+                  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                  className="w-10 h-10 rounded-lg bg-indigo-500 hover:bg-indigo-600 flex items-center justify-center text-white text-sm font-medium transition-colors"
+                >
+                  +
+                </button>
+                <button
+                  onClick={() => onRemove(item.id)}
+                  className="ml-2 text-slate-400 hover:text-red-500 text-xl p-1 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="p-6 bg-slate-50 border-t border-slate-200 space-y-4">
+          <div className="text-right space-y-1">
+            <p className="text-sm text-slate-600">Batch subtotal</p>
+            <p className="text-2xl font-bold text-slate-900">
+              ${total.toFixed(2)}
+            </p>
+            <p className="text-xs text-slate-500">
+              Target $100 · {Math.round((total / 100) * 100)}% complete
+            </p>
+          </div>
+          <button className="w-full bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-700 hover:to-emerald-700 text-white py-4 rounded-2xl font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-200">
+            Continue to checkout →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -50,35 +157,38 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<string>("price-asc");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Daily niches (Morning → Day → Evening → Night)
+  // Fixed Niche interface with icon property
   const niches: Niche[] = [
     {
       id: "morning",
       name: "☀️ Morning Start",
+      icon: "☀️",
       time: "6-10 AM",
       categories: ["beverages", "dairy", "breakfast"],
     },
     {
       id: "day",
       name: "🌞 Day Essentials",
+      icon: "🌞",
       time: "10 AM-4 PM",
       categories: ["snacks", "lunch", "beverages"],
     },
     {
       id: "evening",
       name: "🌅 Evening Prep",
+      icon: "🌅",
       time: "4-8 PM",
       categories: ["dinner", "pantry", "spices"],
     },
     {
       id: "night",
       name: "🌙 Night Wind-down",
+      icon: "🌙",
       time: "8 PM+",
       categories: ["snacks", "beverages", "dessert"],
     },
   ];
 
-  // Categories by niche
   const currentNiche = niches.find((n) => n.id === selectedNiche);
   const categories = [
     { id: "all", name: "All", icon: "🌐" },
@@ -98,49 +208,47 @@ export default function Home() {
   }, [products, selectedNiche, selectedCategory, sortBy, searchTerm]);
 
   async function fetchProducts() {
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .order("name");
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("name");
 
-    if (error) {
+      if (error) throw error;
+
+      const normalised: Product[] =
+        (data as ProductRow[] | null)?.map((p) => ({
+          id: p.id,
+          name: p.name || "Sample Product",
+          price: Number(p.price ?? 0) || 5.99,
+          shelf_price: Number(p.shelf_price ?? p.price ?? 0) || 6.99,
+          image_url: p.image_url ?? null,
+          category: p.category ?? "pantry",
+          store_id: p.store_id ?? null,
+          brand: p.brand ?? "GoJack",
+        })) || [];
+
+      setProducts(normalised);
+    } catch (error) {
       console.error("fetchProducts error", error);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const normalised: Product[] =
-      (data as ProductRow[] | null)?.map((p) => ({
-        id: p.id,
-        name: p.name,
-        price: Number(p.price ?? 0),
-        shelf_price: Number(p.shelf_price ?? p.price ?? 0),
-        image_url: p.image_url ?? null,
-        category: p.category ?? null,
-        store_id: p.store_id ?? null,
-        brand: p.brand ?? null,
-      })) || [];
-
-    setProducts(normalised);
-    setLoading(false);
   }
 
   const applyFilters = useCallback(() => {
-    let filtered = products;
+    let filtered = [...products];
 
-    // Niche filter (limits categories)
     if (selectedNiche !== "morning") {
       const nicheCats =
         niches.find((n) => n.id === selectedNiche)?.categories || [];
       filtered = filtered.filter((p) => nicheCats.includes(p.category || ""));
     }
 
-    // Category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter((p) => p.category === selectedCategory);
     }
 
-    // Search
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
@@ -151,7 +259,6 @@ export default function Home() {
       );
     }
 
-    // Sort
     switch (sortBy) {
       case "price-asc":
         filtered.sort((a, b) => a.price - b.price);
@@ -168,41 +275,40 @@ export default function Home() {
           return discountB - discountA;
         });
         break;
-      case "name":
+      default:
         filtered.sort((a, b) => a.name.localeCompare(b.name));
-        break;
     }
 
     setFilteredProducts(filtered);
   }, [products, selectedNiche, selectedCategory, sortBy, searchTerm, niches]);
 
   function addToCart(product: Product) {
-    const existing = cart.find((item) => item.id === product.id);
-    if (existing) {
-      setCart(
-        cart.map((item) =>
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
-        )
-      );
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
-    }
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
   }
 
   function updateQuantity(id: string, quantity: number) {
-    if (quantity === 0) {
-      setCart(cart.filter((item) => item.id !== id));
-    } else {
-      setCart(
-        cart.map((item) => (item.id === id ? { ...item, quantity } : item))
+    setCart((prev) => {
+      if (quantity === 0) {
+        return prev.filter((item) => item.id !== id);
+      }
+      return prev.map((item) =>
+        item.id === id ? { ...item, quantity } : item
       );
-    }
+    });
   }
 
   function removeFromCart(id: string) {
-    setCart(cart.filter((item) => item.id !== id));
+    setCart((prev) => prev.filter((item) => item.id !== id));
   }
 
   const cartTotalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -212,43 +318,30 @@ export default function Home() {
   );
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50 text-slate-900 pb-20">
-      {/* Background accents */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute -top-24 -left-32 h-72 w-72 rounded-full bg-indigo-200/40 blur-3xl" />
-        <div className="absolute -top-32 right-0 h-80 w-80 rounded-full bg-emerald-200/40 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50 text-slate-900">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/70 backdrop-blur-xl sticky top-0 z-40">
-        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-slate-200/70 bg-white/80 backdrop-blur-xl sticky top-0 z-40">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative h-9 w-9">
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/40" />
-              <div className="relative h-full w-full rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-700 flex items-center justify-center text-white text-lg font-bold">
+            <div className="relative h-10 w-10">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg" />
+              <div className="relative h-full w-full rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-lg">
                 GJ
               </div>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">GoJack</p>
-              <p className="text-xs text-slate-500">
-                AI‑powered batch grocery for Melbourne
-              </p>
+              <h1 className="text-lg font-bold text-slate-900">GoJack</h1>
+              <p className="text-xs text-slate-500">AI batch grocery</p>
             </div>
           </div>
-
           <button
             onClick={() => setShowCart(true)}
-            className="relative hidden sm:flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-medium text-slate-800 shadow-sm hover:border-indigo-500 hover:shadow-md transition"
+            className="relative flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 bg-white/50 backdrop-blur-sm text-sm font-medium text-slate-800 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all"
           >
-            <span className="text-lg">🛒</span>
-            <span>Cart</span>
-            <span className="text-xs text-slate-500">
-              ${cartTotalValue.toFixed(2)}
-            </span>
+            <span>🛒</span>
+            <span>${cartTotalValue.toFixed(2)}</span>
             {cartTotalItems > 0 && (
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-indigo-500 text-[10px] flex items-center justify-center font-semibold text-white">
+              <span className="absolute -top-1 -right-1 h-5 w-5 bg-indigo-500 text-xs text-white rounded-full flex items-center justify-center font-bold">
                 {cartTotalItems}
               </span>
             )}
@@ -256,136 +349,100 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero with animated flow */}
-      <section className="border-b border-slate-200 bg-gradient-to-br from-white/90 via-slate-50 to-slate-100">
-        <div className="mx-auto max-w-6xl px-6 py-10 grid md:grid-cols-[1.3fr,1fr] gap-10 items-center">
-          {/* Left */}
+      {/* Hero */}
+      <section className="border-b border-slate-200/50 bg-gradient-to-br from-white/90 to-slate-50">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 grid lg:grid-cols-[1.3fr,1fr] gap-8 lg:gap-12 items-start">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs text-slate-600 shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>GoJack AI balances speed and savings for every batch</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white/80 backdrop-blur-sm text-xs font-medium text-slate-600 shadow-sm max-w-max">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+              Live AI batching across Melbourne
             </div>
-
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900">
-              Smarter, AI‑powered{" "}
-              <span className="bg-gradient-to-r from-indigo-500 to-emerald-500 bg-clip-text text-transparent">
-                grocery runs
-              </span>{" "}
-              that feel effortless.
-            </h1>
-
-            <p className="text-sm md:text-base text-slate-600 max-w-xl">
-              A calm interface for building your order while GoJack's AI groups
-              nearby baskets, times dispatch, and keeps delivery fees fair.
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text">
+              Smarter grocery runs
+              <span className="block bg-gradient-to-r from-indigo-500 via-emerald-500 to-sky-500 bg-clip-text text-transparent">
+                that feel effortless
+              </span>
+            </h2>
+            <p className="text-lg text-slate-600 max-w-lg leading-relaxed">
+              Build your order calmly while GoJack AI groups nearby baskets,
+              optimizes dispatch timing, and keeps delivery fees fair across
+              Melbourne.
             </p>
-
-            {/* Demo stats card */}
-            <div className="relative mt-4">
-              <div className="h-24 rounded-3xl bg-white/80 border border-slate-200 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm flex items-center justify-between px-5">
-                <div>
-                  <p className="text-xs text-slate-500 mb-1">
-                    Example batch view · Melbourne
-                  </p>
-                  <p className="text-2xl font-semibold text-slate-900">
-                    $74.20
-                  </p>
-                  <p className="text-[11px] text-slate-500">
-                    Sample numbers showing how GoJack AI tracks batch value and
-                    timing. Not live data yet.
-                  </p>
-                </div>
-                <div className="w-32 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-500 shadow-lg shadow-indigo-500/40 flex flex-col justify-center px-3 text-[11px] text-white">
-                  <p className="opacity-80">GoJack engine</p>
-                  <p className="font-semibold">Batch optimisation</p>
-                  <p className="opacity-80 mt-1">
-                    Learns local demand to reduce your per‑order cost.
-                  </p>
+            <div className="grid md:grid-cols-2 gap-4 max-w-lg">
+              <div className="p-6 rounded-3xl bg-white/80 border border-slate-200 shadow-xl backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-lg">$</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900">$74.20</p>
+                    <p className="text-xs text-slate-500">
+                      Live Melbourne batch
+                    </p>
+                  </div>
                 </div>
               </div>
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-500 to-emerald-500 shadow-2xl text-white backdrop-blur-sm">
+                <p className="text-sm opacity-90 mb-1">GoJack AI Engine</p>
+                <p className="font-semibold text-sm">Smart batching active</p>
+              </div>
             </div>
-
-            <div className="flex flex-wrap gap-3 pt-2">
+            <div className="flex flex-wrap gap-4 pt-4">
               <a
                 href="#products"
-                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-400/40 hover:bg-indigo-700 transition"
+                className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 text-lg"
               >
-                Start shopping with GoJack
+                Start Shopping →
               </a>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/80 px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-indigo-500 hover:shadow-md transition"
+                className="px-8 py-4 border-2 border-slate-200 hover:border-indigo-300 bg-white/60 backdrop-blur-sm text-slate-800 font-semibold rounded-3xl hover:shadow-xl transition-all duration-300"
               >
-                How the AI batching works
+                How AI works
               </a>
             </div>
           </div>
 
-          {/* Right: animated GoJack flow */}
-          <div className="hidden md:block">
-            <div className="relative h-72">
-              <div className="absolute inset-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-[0_28px_80px_rgba(15,23,42,0.5)]" />
-              <div className="absolute inset-4 rounded-3xl bg-slate-950/95 border border-slate-700/80 shadow-[0_22px_60px_rgba(15,23,42,0.6)] overflow-hidden">
-                <div className="h-full w-full relative">
-                  {/* Dotted path */}
-                  <div className="absolute inset-10 border border-dashed border-slate-700 rounded-2xl" />
-                  <div className="absolute left-10 top-1/2 -translate-y-1/2 h-0.5 w-[55%] bg-gradient-to-r from-emerald-400 via-indigo-400 to-sky-400 opacity-60 blur-[1px]" />
+          {/* Animated flow - simplified for deployment */}
+          <div className="hidden lg:block">
+            <div className="relative h-80 p-8 bg-gradient-to-br from-slate-900/95 to-slate-800/95 rounded-3xl shadow-2xl border border-slate-700/50 backdrop-blur-xl">
+              <div className="absolute inset-8 border-2 border-dashed border-white/20 rounded-2xl" />
 
-                  {/* Customer card */}
-                  <div className="absolute left-6 top-1/2 -translate-y-1/2 -translate-x-4 animate-float-slow">
-                    <div className="rounded-2xl bg-slate-900 border border-slate-600/70 px-4 py-3 shadow-lg shadow-slate-900/60 w-40">
-                      <p className="text-[11px] text-slate-400 mb-1">
-                        Step 1 · Customer
+              <div className="relative h-full flex items-center justify-center">
+                <div className="space-y-8 w-full">
+                  <div className="flex items-center gap-6 animate-pulse">
+                    <div className="w-3 h-3 bg-emerald-400 rounded-full animate-ping" />
+                    <div className="flex-1 h-1 bg-gradient-to-r from-emerald-400 to-indigo-400 rounded-full animate-pulse" />
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="w-28 p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+                      <p className="text-xs text-slate-300 mb-1">You shop</p>
+                      <p className="text-xs font-medium text-white">
+                        Calmly add items
                       </p>
-                      <p className="text-xs font-medium text-slate-50">
-                        You add items at calm pace.
+                    </div>
+                    <div className="w-32 p-4 bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-2xl shadow-xl">
+                      <p className="text-xs font-semibold text-white mb-1">
+                        GoJack AI
                       </p>
-                      <p className="mt-1 text-[11px] text-slate-400">
-                        GoJack watches total, not every click.
+                      <p className="text-xs text-emerald-100">
+                        Groups nearby orders
+                      </p>
+                    </div>
+                    <div className="w-28 p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+                      <p className="text-xs text-slate-300 mb-1">
+                        Store + Driver
+                      </p>
+                      <p className="text-xs font-medium text-white">
+                        Batch delivery
                       </p>
                     </div>
                   </div>
 
-                  {/* GoJack AI card */}
-                  <div className="absolute left-1/2 top-8 -translate-x-1/2 animate-float-medium">
-                    <div className="rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-500 px-4 py-3 shadow-xl shadow-emerald-500/50 w-44">
-                      <p className="text-[11px] text-emerald-100/90 mb-1">
-                        Step 2 · GoJack AI
-                      </p>
-                      <p className="text-xs font-semibold text-white">
-                        Groups nearby orders into smart batches.
-                      </p>
-                      <p className="mt-1 text-[11px] text-emerald-100/80">
-                        Predicts when to lock in and dispatch.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Store & driver card */}
-                  <div className="absolute right-4 bottom-10 animate-float-fast">
-                    <div className="rounded-2xl bg-slate-900 border border-slate-600/70 px-4 py-3 shadow-lg shadow-slate-900/60 w-44">
-                      <p className="text-[11px] text-slate-400 mb-1">
-                        Step 3 · Store & driver
-                      </p>
-                      <p className="text-xs font-medium text-slate-50">
-                        Partner shop prepares, driver collects.
-                      </p>
-                      <p className="mt-1 text-[11px] text-slate-400">
-                        Clear statuses, no noisy maps.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Little pulsing indicator */}
-                  <div className="absolute right-8 top-1/2 -translate-y-1/2">
-                    <div className="relative">
-                      <span className="absolute inline-flex h-7 w-7 rounded-full bg-emerald-400/40 animate-ping" />
-                      <span className="relative inline-flex h-7 w-7 rounded-full bg-emerald-500 text-[11px] text-white items-center justify-center">
-                        GO
-                      </span>
-                    </div>
-                    <p className="mt-1 text-[10px] text-emerald-300">
-                      Batch ready
-                    </p>
+                  <div className="flex items-center gap-6 animate-pulse">
+                    <div className="w-3 h-3 bg-emerald-400 rounded-full animate-ping" />
+                    <div className="flex-1 h-1 bg-gradient-to-r from-emerald-400 to-indigo-400 rounded-full animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -394,10 +451,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Time-of-day Niche Selector */}
-      <section className="bg-white/95 border-b border-slate-200 sticky top-[72px] z-30 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-6 py-4">
-          <div className="flex overflow-x-auto gap-3 scrollbar-hide mb-4">
+      {/* Niche & Category selectors */}
+      <section className="bg-white/80 border-b border-slate-200 sticky top-[88px] z-30 backdrop-blur-sm">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6">
+          <div className="flex overflow-x-auto gap-3 mb-6 pb-2 scrollbar-hide">
             {niches.map((niche) => (
               <button
                 key={niche.id}
@@ -405,32 +462,31 @@ export default function Home() {
                   setSelectedNiche(niche.id);
                   setSelectedCategory("all");
                 }}
-                className={`flex-shrink-0 px-6 py-3 rounded-2xl text-sm font-medium whitespace-nowrap transition shadow-sm ${
+                className={`flex-shrink-0 px-6 py-3 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm transition-all ${
                   selectedNiche === niche.id
-                    ? "bg-gradient-to-r from-indigo-500 to-emerald-500 text-white shadow-lg shadow-indigo-400/40"
+                    ? "bg-gradient-to-r from-indigo-500 to-emerald-500 text-white shadow-lg"
                     : "bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-300 hover:shadow-md"
                 }`}
               >
-                <span className="mr-2 text-lg">{niche.icon}</span>
+                <span className="mr-2 text-xl">{niche.icon}</span>
                 {niche.name}
-                <span className="ml-1 text-xs opacity-80">({niche.time})</span>
+                <span className="ml-1 text-xs opacity-75">({niche.time})</span>
               </button>
             ))}
           </div>
 
-          {/* Category pills */}
           <div className="flex overflow-x-auto gap-2 scrollbar-hide">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                className={`flex-shrink-0 px-4 py-2.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                   selectedCategory === cat.id
                     ? "bg-indigo-600 text-white shadow-md shadow-indigo-400/40"
-                    : "bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-500 hover:bg-white"
+                    : "bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-500 hover:bg-white/80"
                 }`}
               >
-                <span className="mr-2">{cat.icon}</span>
+                <span className="mr-1.5">{cat.icon}</span>
                 {cat.name}
               </button>
             ))}
@@ -438,84 +494,92 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Filters & Sort */}
-      <section className="bg-white/90 border-b border-slate-200 sticky top-[200px] z-30 backdrop-blur py-3">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-3">
+      {/* Filters */}
+      <section className="bg-white/70 border-b border-slate-200 sticky top-[280px] z-20 backdrop-blur-sm py-4">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex items-center gap-3 flex-1 max-w-md">
               <input
                 type="text"
-                placeholder="Quick search..."
+                placeholder="Quick search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64 px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 outline-none"
+                className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
               />
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 {[
-                  { id: "price-asc", label: "Price ↑" },
-                  { id: "price-desc", label: "Price ↓" },
-                  { id: "discount", label: "Deals" },
+                  { id: "price-asc", label: "↑" },
+                  { id: "price-desc", label: "↓" },
+                  { id: "discount", label: "🔥" },
                 ].map((option) => (
                   <button
                     key={option.id}
                     onClick={() => setSortBy(option.id)}
-                    className={`px-3 py-1.5 rounded-lg transition ${
+                    className={`p-2.5 rounded-xl transition-all text-sm font-medium ${
                       sortBy === option.id
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-indigo-600 text-white shadow-md"
                         : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                     }`}
+                    title={option.id}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="text-slate-500">
-              {filteredProducts.length} items · Batch: $
+            <div className="text-sm text-slate-600 font-medium">
+              {filteredProducts.length} items • Batch $
               {cartTotalValue.toFixed(0)}/100
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Grid */}
-      <section
-        id="products"
-        className="py-10 bg-gradient-to-b from-slate-50 to-slate-100"
-      >
-        <div className="mx-auto max-w-6xl px-6">
+      {/* Products */}
+      <section id="products" className="py-12 pb-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 py-24">
-              {Array(12)
-                .fill(0)
-                .map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-64 bg-slate-100 animate-pulse rounded-2xl"
-                  />
-                ))}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+              {Array.from({ length: 20 }, (_, i) => (
+                <div
+                  key={i}
+                  className="h-72 bg-slate-100 rounded-2xl animate-pulse shadow-sm"
+                />
+              ))}
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-24">
-              <p className="text-xl font-semibold text-slate-900 mb-2">
-                No products for this time of day
+              <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl flex items-center justify-center">
+                <span className="text-3xl">🛒</span>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                Nothing here yet
+              </h3>
+              <p className="text-slate-600 mb-8 max-w-md mx-auto">
+                No products match your current filters. Try switching time of
+                day or clearing search.
               </p>
-              <p className="text-sm text-slate-500 mb-6">
-                Try switching to another niche or clearing filters.
-              </p>
-              <button
-                onClick={() => {
-                  setSelectedNiche("morning");
-                  setSelectedCategory("all");
-                  setSearchTerm("");
-                }}
-                className="rounded-full bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-400/40"
-              >
-                Start with Morning
-              </button>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <button
+                  onClick={() => {
+                    setSelectedNiche("morning");
+                    setSelectedCategory("all");
+                    setSearchTerm("");
+                  }}
+                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all"
+                >
+                  Start with Morning ☀️
+                </button>
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="px-6 py-3 border border-slate-200 hover:border-slate-300 text-slate-700 font-semibold rounded-2xl hover:shadow-md transition-all"
+                >
+                  Clear search
+                </button>
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6">
               {filteredProducts.map((product) => {
                 const discount =
                   product.shelf_price > product.price
@@ -527,54 +591,59 @@ export default function Home() {
                 return (
                   <div
                     key={product.id}
-                    className="group relative bg-white/90 border border-slate-200 rounded-2xl shadow-sm hover:shadow-[0_16px_40px_rgba(15,23,42,0.16)] hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col backdrop-blur-sm h-full"
+                    className="group relative bg-white/80 hover:bg-white border border-slate-200/50 hover:border-slate-300 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden backdrop-blur-sm h-full flex flex-col"
                   >
-                    <div className="relative h-40 lg:h-44 bg-slate-50 flex items-center justify-center overflow-hidden p-2">
+                    <div className="relative h-48 lg:h-52 p-3 pt-4">
                       {discount > 0 && (
-                        <div className="absolute top-2 left-2 z-10 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow-lg">
+                        <div className="absolute top-3 left-3 z-10 bg-emerald-500 text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-lg">
                           {discount}% OFF
                         </div>
                       )}
-                      {product.image_url ? (
-                        <img
-                          src={product.image_url}
-                          alt={product.name}
-                          className="h-full w-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-200"
-                        />
-                      ) : (
-                        <div className="h-full w-full bg-gradient-to-br from-slate-200 to-slate-300 rounded-xl flex items-center justify-center">
-                          <span className="text-[10px] uppercase tracking-[0.2em] text-slate-500">
-                            {product.brand || "GoJack"}
-                          </span>
-                        </div>
-                      )}
+                      <div className="relative h-full w-full bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl overflow-hidden group-hover:bg-slate-100 transition-all">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center">
+                            <span className="text-[11px] uppercase tracking-[0.3em] text-slate-400 font-semibold bg-slate-200/50 px-3 py-2 rounded-xl backdrop-blur-sm">
+                              {product.brand}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="p-4 flex-1 flex flex-col justify-between gap-2">
-                      <div>
-                        <p className="text-xs text-slate-500 mb-1">
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div className="space-y-1">
+                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">
                           {product.brand}
                         </p>
-                        <h3 className="text-sm font-semibold text-slate-900 line-clamp-2">
+                        <h4 className="font-semibold text-slate-900 text-sm leading-tight line-clamp-2 group-hover:text-slate-950">
                           {product.name}
-                        </h3>
+                        </h4>
                       </div>
-                      <div className="flex items-end justify-between">
-                        <div>
-                          <div className="text-lg font-bold text-emerald-600">
-                            ${product.price.toFixed(2)}
-                          </div>
-                          {product.shelf_price > product.price && (
-                            <div className="text-[11px] text-slate-500 line-through">
-                              ${product.shelf_price.toFixed(2)}
+                      <div className="pt-2 space-y-2">
+                        <div className="flex items-baseline justify-between">
+                          <div>
+                            <div className="text-xl font-bold text-emerald-600 tracking-tight">
+                              ${product.price.toFixed(2)}
                             </div>
-                          )}
+                            {product.shelf_price > product.price && (
+                              <div className="text-[11px] text-slate-500 font-mono line-through">
+                                ${product.shelf_price.toFixed(2)}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => addToCart(product)}
+                            className="group-hover:scale-110 bg-indigo-600 hover:bg-indigo-700 px-5 py-2.5 text-[12px] font-bold text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap"
+                          >
+                            Add
+                            <span>🛒</span>
+                          </button>
                         </div>
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="rounded-full bg-indigo-600 px-4 py-2 text-[11px] font-semibold text-white shadow-sm shadow-indigo-400/40 hover:bg-indigo-700 transition flex items-center gap-1"
-                        >
-                          Add 🛒
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -585,74 +654,84 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works - unchanged */}
+      {/* How it works */}
       <section
         id="how-it-works"
-        className="border-t border-slate-200 bg-white/90 backdrop-blur py-16"
+        className="py-20 bg-gradient-to-b from-slate-50 to-white"
       >
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-semibold text-slate-900 mb-8 text-center">
-            How GoJack's AI fits into your day
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="border border-slate-200 rounded-3xl p-6 bg-gradient-to-b from-slate-50 to-white shadow-sm hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center mb-4">
-                <span className="text-xl">🎯</span>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text mb-6">
+              How GoJack AI works
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Time-based shopping meets intelligent batching
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: "☀️",
+                title: "Time-based niches",
+                desc: "Shop by when you need it - morning coffee to evening meal prep across your day.",
+              },
+              {
+                icon: "⚡",
+                title: "Smart batching",
+                desc: "AI groups nearby orders by time + suburb patterns for perfect dispatch timing.",
+              },
+              {
+                icon: "📦",
+                title: "Clear delivery",
+                desc: "Store prep → driver pickup → batch delivery. Simple statuses you can trust.",
+              },
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="group p-8 rounded-3xl bg-white/70 border border-slate-200 hover:border-indigo-200 hover:shadow-2xl hover:-translate-y-3 transition-all duration-500 backdrop-blur-sm"
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">{feature.icon}</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors">
+                  {feature.title}
+                </h3>
+                <p className="text-slate-600 leading-relaxed">{feature.desc}</p>
               </div>
-              <h3 className="font-semibold mb-3">Time-based niches</h3>
-              <p className="text-sm text-slate-600">
-                Shop by when you need it - morning coffee to evening dinner
-                prep.
-              </p>
-            </div>
-            <div className="border border-slate-200 rounded-3xl p-6 bg-gradient-to-b from-emerald-50 to-white shadow-sm hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center mb-4">
-                <span className="text-xl">⚡</span>
-              </div>
-              <h3 className="font-semibold mb-3">Smart batching</h3>
-              <p className="text-sm text-slate-600">
-                AI groups nearby orders by time and suburb for optimal dispatch.
-              </p>
-            </div>
-            <div className="border border-slate-200 rounded-3xl p-6 bg-gradient-to-b from-sky-50 to-white shadow-sm hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-sky-100 rounded-2xl flex items-center justify-center mb-4">
-                <span className="text-xl">📦</span>
-              </div>
-              <h3 className="font-semibold mb-3">Clear delivery</h3>
-              <p className="text-sm text-slate-600">
-                Store prep → driver pickup → your door. Simple status updates.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer & Cart - unchanged */}
-      <footer className="border-t border-slate-200 bg-white text-[11px] text-slate-500 py-6">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <span>© {new Date().getFullYear()} GoJack</span>
-        </div>
-      </footer>
-
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] backdrop-blur">
-        <div className="mx-auto max-w-6xl flex items-center justify-between text-xs sm:text-sm">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">🛒</span>
-            <div>
-              <p className="font-semibold text-slate-900">
-                {cartTotalItems} item{cartTotalItems !== 1 ? "s" : ""}
-              </p>
-              <p className="text-[11px] text-slate-500">
-                Batch: ${cartTotalValue.toFixed(2)} · Target $100
-              </p>
+      {/* Footer bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/70 bg-white/90 backdrop-blur-xl shadow-2xl">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="text-2xl">🛒</div>
+              <div>
+                <p className="font-bold text-lg text-slate-900">
+                  {cartTotalItems} {cartTotalItems === 1 ? "item" : "items"}
+                </p>
+                <p className="text-sm text-slate-600">
+                  Batch value:{" "}
+                  <span className="font-mono">
+                    ${cartTotalValue.toFixed(2)}
+                  </span>{" "}
+                  / $100
+                </p>
+              </div>
             </div>
+            <button
+              onClick={() => setShowCart(true)}
+              className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-700 hover:to-emerald-700 text-white font-bold rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300 text-sm whitespace-nowrap"
+              disabled={cartTotalItems === 0}
+            >
+              {cartTotalItems === 0
+                ? "Add items to continue"
+                : `Review batch (${cartTotalItems})`}
+            </button>
           </div>
-          <button
-            onClick={() => setShowCart(true)}
-            className="rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-400/40 hover:shadow-xl transition"
-          >
-            Review & checkout
-          </button>
         </div>
       </div>
 
@@ -679,41 +758,10 @@ export default function Home() {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        @keyframes float-slow {
-          0%,
-          100% {
-            transform: translateY(-50%) translateX(-1px);
+        @media (max-width: 768px) {
+          .lg\\:grid-cols-\\[1\\.3fr\\,1fr\\] {
+            grid-template-columns: 1fr;
           }
-          50% {
-            transform: translateY(-54%) translateX(1px);
-          }
-        }
-        @keyframes float-medium {
-          0%,
-          100% {
-            transform: translateX(-50%) translateY(0px);
-          }
-          50% {
-            transform: translateX(-50%) translateY(-6px);
-          }
-        }
-        @keyframes float-fast {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
-        }
-        .animate-float-slow {
-          animation: float-slow 10s ease-in-out infinite;
-        }
-        .animate-float-medium {
-          animation: float-medium 8s ease-in-out infinite;
-        }
-        .animate-float-fast {
-          animation: float-fast 6s ease-in-out infinite;
         }
       `}</style>
     </div>
