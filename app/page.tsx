@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Lock, Unlock, ShieldCheck, Users } from "lucide-react"; // Assuming you might have lucide-react, if not I will use text/emoji
+import { Lock, Unlock, ShieldCheck, Users, Sparkles } from "lucide-react";
 
 interface ProductRow {
   id: string;
@@ -44,13 +44,22 @@ function Cart({
   onUpdateQuantity,
   onRemove,
   onClose,
+  onCheckout,
 }: {
   cart: CartItem[];
   onUpdateQuantity: (id: string, quantity: number) => void;
   onRemove: (id: string) => void;
   onClose: () => void;
+  onCheckout: () => void;
 }) {
   const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
+
+  // Calculate savings
+  const totalSavings = cart.reduce(
+    (sum, item) => sum + (item.shelf_price - item.price) * item.quantity,
+    0
+  );
+
   const BATCH_TARGET = 100;
   const progressPercent = Math.min(
     100,
@@ -138,8 +147,7 @@ function Cart({
         <div className="p-5 border-t border-slate-200 space-y-4 shrink-0 bg-slate-50/50">
           {/* Social Proof Ticker */}
           <div className="flex items-center gap-2 text-xs text-slate-600 bg-white border border-slate-100 rounded-lg p-2 shadow-sm">
-            {/* Using a simple emoji if no icon lib, or an SVG */}
-            <span className="text-base">👥</span>
+            <Users className="h-4 w-4 text-sky-600" />
             <span>
               <strong>{activeNeighbours} neighbours</strong> in your suburb
               added to this batch recently.
@@ -148,6 +156,18 @@ function Cart({
 
           {/* Progress Bar & Status */}
           <div className="space-y-2">
+            {/* Savings Indicator - Psychologically important */}
+            {totalSavings > 0 && (
+              <div className="flex items-center justify-between text-xs animate-pulse">
+                <span className="text-emerald-600 font-medium flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Your savings
+                </span>
+                <span className="text-emerald-600 font-bold">
+                  -${totalSavings.toFixed(2)}
+                </span>
+              </div>
+            )}
+
             <div className="flex items-baseline justify-between">
               <p className="text-xs text-slate-500">Batch total</p>
               <div className="text-right">
@@ -171,7 +191,7 @@ function Cart({
             <div className="flex justify-between items-center pt-1 h-8">
               {isTargetHit ? (
                 <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md text-xs font-medium animate-in fade-in slide-in-from-bottom-1">
-                  <span>🛡️</span>
+                  <ShieldCheck className="h-3.5 w-3.5" />
                   <span>Fair Price Locked. No Surge.</span>
                 </div>
               ) : (
@@ -186,7 +206,10 @@ function Cart({
             </div>
           </div>
 
-          <button className="w-full rounded-full bg-slate-900 text-white text-sm font-semibold py-3 hover:bg-slate-800 shadow-lg shadow-slate-900/10">
+          <button
+            onClick={onCheckout}
+            className="w-full rounded-full bg-slate-900 text-white text-sm font-semibold py-3 hover:bg-slate-800 shadow-lg shadow-slate-900/10 active:scale-95 transition-transform"
+          >
             Continue to checkout
           </button>
         </div>
@@ -356,6 +379,11 @@ export default function Home() {
 
   function removeFromCart(id: string) {
     setCart((prev) => prev.filter((item) => item.id !== id));
+  }
+
+  function handleCheckout() {
+    // Add your checkout logic here (e.g. router.push('/checkout'))
+    alert("Proceeding to checkout with " + cart.length + " items!");
   }
 
   const cartTotalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -797,6 +825,7 @@ export default function Home() {
           onUpdateQuantity={updateQuantity}
           onRemove={removeFromCart}
           onClose={() => setShowCart(false)}
+          onCheckout={handleCheckout}
         />
       )}
 
