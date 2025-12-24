@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { Lock, Unlock, ShieldCheck, Users } from "lucide-react"; // Assuming you might have lucide-react, if not I will use text/emoji
 
 interface ProductRow {
   id: string;
@@ -50,11 +51,21 @@ function Cart({
   onClose: () => void;
 }) {
   const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  const BATCH_TARGET = 100;
+  const progressPercent = Math.min(
+    100,
+    Math.round((total / BATCH_TARGET) * 100)
+  );
+  const isTargetHit = total >= BATCH_TARGET;
+
+  // Mock social proof number
+  const activeNeighbours = 3;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end justify-center p-4">
-      <div className="w-full max-w-md max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
-        <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+      <div className="w-full max-w-md max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col">
+        {/* Header */}
+        <div className="p-5 border-b border-slate-200 flex items-center justify-between shrink-0">
           <div>
             <p className="text-lg font-semibold text-slate-900">Your batch</p>
             <p className="text-xs text-slate-500 mt-0.5">{cart.length} items</p>
@@ -67,13 +78,14 @@ function Cart({
           </button>
         </div>
 
-        <div className="p-5 space-y-4 overflow-y-auto max-h-80">
+        {/* Scrollable Items Area */}
+        <div className="p-5 space-y-4 overflow-y-auto flex-1">
           {cart.map((item) => (
             <div
               key={item.id}
               className="flex gap-3 items-center border-b border-slate-100 pb-3 last:border-b-0"
             >
-              <div className="h-16 w-16 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden">
+              <div className="h-16 w-16 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
                 {item.image_url ? (
                   <img
                     src={item.image_url}
@@ -122,17 +134,59 @@ function Cart({
           ))}
         </div>
 
-        <div className="p-5 border-t border-slate-200 space-y-2">
-          <div className="flex items-baseline justify-between">
-            <p className="text-xs text-slate-500">Batch total</p>
-            <p className="text-xl font-semibold text-slate-900">
-              ${total.toFixed(2)}
-            </p>
+        {/* Footer / Summary Area */}
+        <div className="p-5 border-t border-slate-200 space-y-4 shrink-0 bg-slate-50/50">
+          {/* Social Proof Ticker */}
+          <div className="flex items-center gap-2 text-xs text-slate-600 bg-white border border-slate-100 rounded-lg p-2 shadow-sm">
+            {/* Using a simple emoji if no icon lib, or an SVG */}
+            <span className="text-base">👥</span>
+            <span>
+              <strong>{activeNeighbours} neighbours</strong> in your suburb
+              added to this batch recently.
+            </span>
           </div>
-          <p className="text-[11px] text-slate-500">
-            Target $100 · {Math.round((total / 100) * 100)}% complete
-          </p>
-          <button className="mt-2 w-full rounded-full bg-slate-900 text-white text-sm font-semibold py-2.5 hover:bg-slate-800">
+
+          {/* Progress Bar & Status */}
+          <div className="space-y-2">
+            <div className="flex items-baseline justify-between">
+              <p className="text-xs text-slate-500">Batch total</p>
+              <div className="text-right">
+                <p className="text-xl font-semibold text-slate-900">
+                  ${total.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {/* The Bar */}
+            <div className="relative h-2.5 w-full rounded-full bg-slate-200 overflow-hidden">
+              <div
+                className={`absolute top-0 left-0 h-full transition-all duration-500 ease-out ${
+                  isTargetHit ? "bg-emerald-500" : "bg-slate-900"
+                }`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+
+            {/* Dynamic Status Text / Badge */}
+            <div className="flex justify-between items-center pt-1 h-8">
+              {isTargetHit ? (
+                <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md text-xs font-medium animate-in fade-in slide-in-from-bottom-1">
+                  <span>🛡️</span>
+                  <span>Fair Price Locked. No Surge.</span>
+                </div>
+              ) : (
+                <p className="text-[11px] text-slate-500">
+                  Add ${(BATCH_TARGET - total).toFixed(2)} more to lock fair
+                  price
+                </p>
+              )}
+              <span className="text-[10px] text-slate-400 font-mono">
+                {progressPercent}%
+              </span>
+            </div>
+          </div>
+
+          <button className="w-full rounded-full bg-slate-900 text-white text-sm font-semibold py-3 hover:bg-slate-800 shadow-lg shadow-slate-900/10">
             Continue to checkout
           </button>
         </div>
