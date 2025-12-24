@@ -1,3 +1,4 @@
+app->page.tsx
 // app/page.tsx
 "use client";
 
@@ -5,68 +6,67 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 
 interface ProductRow {
-  id: string;
-  name: string;
-  price: number | string | null;
-  shelf_price: number | string | null;
-  image_url?: string | null;
-  category?: string | null;
-  store_id?: string | null;
-  brand?: string | null;
+id: string;
+name: string;
+price: number | string | null;
+shelf_price: number | string | null;
+image_url?: string | null;
+category?: string | null;
+store_id?: string | null;
+brand?: string | null;
 }
 
 interface Product {
-  id: string;
-  name: string;
-  price: number;
-  shelf_price: number;
-  image_url?: string | null;
-  category?: string | null;
-  store_id?: string | null;
-  brand?: string | null;
+id: string;
+name: string;
+price: number;
+shelf_price: number;
+image_url?: string | null;
+category?: string | null;
+store_id?: string | null;
+brand?: string | null;
 }
 
 interface CartItem extends Product {
-  quantity: number;
+quantity: number;
 }
 
 interface Niche {
-  id: string;
-  name: string;
-  icon: string;
-  time: string;
-  categories: string[];
-  hint: string;
+id: string;
+name: string;
+icon: string;
+time: string;
+categories: string[];
 }
 
 function Cart({
-  cart,
-  onUpdateQuantity,
-  onRemove,
-  onClose,
+cart,
+onUpdateQuantity,
+onRemove,
+onClose,
 }: {
-  cart: CartItem[];
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemove: (id: string) => void;
-  onClose: () => void;
+cart: CartItem[];
+onUpdateQuantity: (id: string, quantity: number) => void;
+onRemove: (id: string) => void;
+onClose: () => void;
 }) {
-  const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
+const total = cart.reduce((sum, item) => sum + item.quantity \* item.price, 0);
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end justify-center p-4">
-      <div className="w-full max-w-md max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
-        <div className="p-5 border-b border-slate-200 flex items-center justify-between">
-          <div>
-            <p className="text-lg font-semibold text-slate-900">Your batch</p>
-            <p className="text-xs text-slate-500 mt-0.5">{cart.length} items</p>
-          </div>
-          <button
+return (
+<div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end justify-center p-4">
+<div className="w-full max-w-md max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+<div className="p-5 border-b border-slate-200 flex items-center justify-between">
+<div>
+<p className="text-lg font-semibold text-slate-900">Your batch</p>
+<p className="text-xs text-slate-500 mt-0.5">{cart.length} items</p>
+</div>
+<button
             onClick={onClose}
             className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"
           >
-            ✕
-          </button>
-        </div>
+✕
+</button>
+</div>
 
         <div className="p-5 space-y-4 overflow-y-auto max-h-80">
           {cart.map((item) => (
@@ -139,79 +139,75 @@ function Cart({
         </div>
       </div>
     </div>
-  );
+
+);
 }
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [showCart, setShowCart] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [selectedNiche, setSelectedNiche] = useState<string>("morning");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("price-asc");
-  const [searchTerm, setSearchTerm] = useState("");
+const [products, setProducts] = useState<Product[]>([]);
+const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+const [cart, setCart] = useState<CartItem[]>([]);
+const [showCart, setShowCart] = useState(false);
+const [loading, setLoading] = useState(true);
+const [selectedNiche, setSelectedNiche] = useState<string>("morning");
+const [selectedCategory, setSelectedCategory] = useState<string>("all");
+const [sortBy, setSortBy] = useState<string>("price-asc");
+const [searchTerm, setSearchTerm] = useState("");
 
-  const niches: Niche[] = [
-    {
-      id: "morning",
-      name: "Morning start",
-      icon: "☀️",
-      time: "6–10am",
-      categories: ["beverages", "dairy", "breakfast"],
-      hint: "Best for: milk, bread, cereals",
-    },
-    {
-      id: "day",
-      name: "Day fuel",
-      icon: "🌞",
-      time: "10am–4pm",
-      categories: ["snacks", "lunch", "beverages"],
-      hint: "Best for: snacks, drinks, lunch fixes",
-    },
-    {
-      id: "evening",
-      name: "Dinner prep",
-      icon: "🌅",
-      time: "4–8pm",
-      categories: ["dinner", "pantry", "spices"],
-      hint: "Best for: curry kits, rice, fresh veg",
-    },
-    {
-      id: "night",
-      name: "Night bites",
-      icon: "🌙",
-      time: "8pm+",
-      categories: ["snacks", "beverages", "dessert"],
-      hint: "Best for: desserts, late snacks",
-    },
-  ];
+const niches: Niche[] = [
+{
+id: "morning",
+name: "Morning start",
+icon: "☀️",
+time: "6–10am",
+categories: ["beverages", "dairy", "breakfast"],
+},
+{
+id: "day",
+name: "Day fuel",
+icon: "🌞",
+time: "10am–4pm",
+categories: ["snacks", "lunch", "beverages"],
+},
+{
+id: "evening",
+name: "Dinner prep",
+icon: "🌅",
+time: "4–8pm",
+categories: ["dinner", "pantry", "spices"],
+},
+{
+id: "night",
+name: "Night bites",
+icon: "🌙",
+time: "8pm+",
+categories: ["snacks", "beverages", "dessert"],
+},
+];
 
-  const currentNiche = niches.find((n) => n.id === selectedNiche)!;
+const currentNiche = niches.find((n) => n.id === selectedNiche);
+const categories = [
+{ id: "all", name: "All", icon: "🛒" },
+...(currentNiche?.categories.map((cat) => ({
+id: cat,
+name: cat.charAt(0).toUpperCase() + cat.slice(1),
+icon: "📦",
+})) || []),
+];
 
-  const categories = [
-    { id: "all", name: "All", icon: "🛒" },
-    ...(currentNiche?.categories.map((cat) => ({
-      id: cat,
-      name: cat.charAt(0).toUpperCase() + cat.slice(1),
-      icon: "📦",
-    })) || []),
-  ];
+useEffect(() => {
+fetchProducts();
+}, []);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+useEffect(() => {
+applyFilters();
+}, [products, selectedNiche, selectedCategory, sortBy, searchTerm]);
 
-  useEffect(() => {
-    applyFilters();
-  }, [products, selectedNiche, selectedCategory, sortBy, searchTerm]);
-
-  async function fetchProducts() {
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .order("name");
+async function fetchProducts() {
+const { data, error } = await supabase
+.from("products")
+.select("\*")
+.order("name");
 
     if (error) {
       console.error("fetchProducts error", error);
@@ -233,10 +229,11 @@ export default function Home() {
 
     setProducts(normalised);
     setLoading(false);
-  }
 
-  const applyFilters = useCallback(() => {
-    let filtered = [...products];
+}
+
+const applyFilters = useCallback(() => {
+let filtered = [...products];
 
     if (selectedNiche !== "morning") {
       const nicheCats =
@@ -279,76 +276,65 @@ export default function Home() {
     }
 
     setFilteredProducts(filtered);
-  }, [products, selectedNiche, selectedCategory, sortBy, searchTerm, niches]);
 
-  function addToCart(product: Product) {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  }
+}, [products, selectedNiche, selectedCategory, sortBy, searchTerm, niches]);
 
-  function updateQuantity(id: string, quantity: number) {
-    setCart((prev) => {
-      if (quantity === 0) {
-        return prev.filter((item) => item.id !== id);
-      }
-      return prev.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      );
-    });
-  }
+function addToCart(product: Product) {
+setCart((prev) => {
+const existing = prev.find((item) => item.id === product.id);
+if (existing) {
+return prev.map((item) =>
+item.id === product.id
+? { ...item, quantity: item.quantity + 1 }
+: item
+);
+}
+return [...prev, { ...product, quantity: 1 }];
+});
+}
 
-  function removeFromCart(id: string) {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  }
+function updateQuantity(id: string, quantity: number) {
+setCart((prev) => {
+if (quantity === 0) {
+return prev.filter((item) => item.id !== id);
+}
+return prev.map((item) =>
+item.id === id ? { ...item, quantity } : item
+);
+});
+}
 
-  const cartTotalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const cartTotalValue = cart.reduce(
-    (sum, item) => sum + item.quantity * item.price,
-    0
-  );
+function removeFromCart(id: string) {
+setCart((prev) => prev.filter((item) => item.id !== id));
+}
 
-  // helper: suggest a likely fuller niche based on current time
-  function suggestTimeNiche(): string {
-    const hour = new Date().getHours();
-    if (hour >= 6 && hour < 10) return "morning";
-    if (hour >= 10 && hour < 16) return "day";
-    if (hour >= 16 && hour < 20) return "evening";
-    return "night";
-  }
+const cartTotalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+const cartTotalValue = cart.reduce(
+(sum, item) => sum + item.quantity \* item.price,
+0
+);
 
-  const suggestedNicheId = suggestTimeNiche();
-  const suggestedNiche = niches.find((n) => n.id === suggestedNicheId)!;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50 text-slate-900 pb-24">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur sticky top-0 z-40">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative h-9 w-9">
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-900 to-slate-700 shadow-lg" />
-              <div className="relative h-full w-full rounded-xl bg-gradient-to-br from-slate-800 to-slate-600 flex items-center justify-center text-white text-sm font-semibold">
-                GJ
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900">
-                GoJack Grocery
-              </p>
-              <p className="text-xs text-slate-500">
-                AI‑batched delivery · Melbourne
-              </p>
-            </div>
-          </div>
+return (
+<div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50 text-slate-900 pb-24">
+{/_ Header _/}
+<header className="border-b border-slate-200 bg-white/80 backdrop-blur sticky top-0 z-40">
+<div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 flex items-center justify-between">
+<div className="flex items-center gap-3">
+<div className="relative h-9 w-9">
+<div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-900 to-slate-700 shadow-lg" />
+<div className="relative h-full w-full rounded-xl bg-gradient-to-br from-slate-800 to-slate-600 flex items-center justify-center text-white text-sm font-semibold">
+GJ
+</div>
+</div>
+<div>
+<p className="text-sm font-semibold text-slate-900">
+GoJack Grocery
+</p>
+<p className="text-xs text-slate-500">
+AI‑batched delivery · Melbourne
+</p>
+</div>
+</div>
 
           <button
             onClick={() => setShowCart(true)}
@@ -382,8 +368,9 @@ export default function Home() {
             </h1>
 
             <p className="text-sm md:text-base text-slate-600 max-w-xl">
-              Save on delivery by sharing a driver with nearby shoppers in your
-              suburb.
+              Build your order while GoJack AI groups nearby baskets by time of
+              day and suburb, then dispatches when the batch hits the sweet
+              spot.
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 max-w-md">
@@ -396,8 +383,7 @@ export default function Home() {
                     $74.20
                   </p>
                   <p className="text-[11px] text-slate-500">
-                    Target batch: $100. When your batch hits target, shared
-                    delivery stays fair.
+                    Sample numbers showing how batches build. Not live yet.
                   </p>
                 </div>
               </div>
@@ -405,8 +391,7 @@ export default function Home() {
                 <p className="text-[11px] text-slate-200">GoJack engine</p>
                 <p className="text-sm font-semibold">Batch optimisation</p>
                 <p className="text-[11px] text-slate-300 mt-1">
-                  Watches value and timing in your suburb to group nearby
-                  orders.
+                  Learns local demand to keep per‑order costs fair.
                 </p>
               </div>
             </div>
@@ -427,15 +412,90 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Visual flow – unchanged from your existing version */}
-          {/* ... keep your existing right‑hand hero visual here ... */}
+          {/* Animated flow – desktop, overlapped cards */}
+          <div className="hidden md:block">
+            <div className="relative h-72 w-full rounded-3xl bg-slate-950 text-slate-50 shadow-xl border border-slate-900 overflow-hidden">
+              {/* Inner dotted frame */}
+              <div className="absolute inset-6 rounded-2xl border border-dashed border-slate-700" />
+
+              {/* Gradient line */}
+              <div className="absolute left-10 right-10 top-1/2 h-px bg-gradient-to-r from-teal-400 via-emerald-400 to-amber-400" />
+
+              {/* Card 1 – You */}
+              <div className="absolute left-16 top-1/2 -translate-y-1/2 -translate-x-6">
+                <div className="rounded-2xl bg-slate-900/80 border border-slate-700/80 px-4 py-3 shadow-lg shadow-slate-900/40 min-w-[190px]">
+                  <p className="text-[11px] text-slate-400 mb-1">
+                    Step 1 · You
+                  </p>
+                  <p className="text-xs font-semibold text-slate-50">
+                    Add items at your own pace.
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    No chasing drivers or timers.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2 – AI */}
+              <div className="absolute left-1/2 top-6 -translate-x-1/2 ai-card-float">
+                <div className="rounded-3xl bg-gradient-to-br from-teal-500 via-emerald-500 to-amber-400 px-5 py-4 shadow-2xl shadow-emerald-500/40 min-w-[220px]">
+                  <p className="text-[11px] text-slate-100 mb-1">
+                    Step 2 · GoJack AI
+                  </p>
+                  <p className="text-sm font-semibold text-white">
+                    Groups nearby orders into smart batches.
+                  </p>
+                  <p className="text-[11px] text-emerald-50 mt-1">
+                    Watches value and timing in your suburb.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3 – Store & driver */}
+              <div className="absolute right-10 bottom-8">
+                <div className="rounded-2xl bg-slate-900/85 border border-slate-700/80 px-4 py-3 shadow-lg shadow-slate-900/40 min-w-[210px]">
+                  <p className="text-[11px] text-slate-400 mb-1">
+                    Step 3 · Store & driver
+                  </p>
+                  <p className="text-xs font-semibold text-slate-50">
+                    Partner shop packs, driver collects.
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Batch goes out in one clear window.
+                  </p>
+                </div>
+              </div>
+
+              {/* GO pill under AI card */}
+              <div className="absolute left-1/2 top-[4.5rem] -translate-x-1/2 translate-y-full">
+                <span className="relative inline-flex h-7 w-7 items-center justify-center">
+                  <span className="absolute inline-flex h-7 w-7 rounded-full bg-teal-500/40 animate-ping" />
+                  <span className="relative inline-flex h-7 w-7 rounded-full bg-teal-500 text-[11px] text-white font-semibold items-center justify-center">
+                    GO
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Simplified flow – mobile */}
+          <div className="md:hidden">
+            <div className="rounded-3xl bg-slate-950 text-slate-50 p-4 space-y-3 shadow-md border border-slate-800">
+              <p className="text-xs text-slate-400">How GoJack works</p>
+              <div className="space-y-2 text-[11px]">
+                <p>1. You add items at your pace.</p>
+                <p>2. GoJack AI groups orders nearby into a batch.</p>
+                <p>3. Store prepares, driver delivers the whole batch.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Niche & category selector */}
       <section className="bg-white/90 border-b border-slate-200 sticky top-[72px] z-30 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4">
-          <div className="flex overflow-x-auto gap-3 scrollbar-hide mb-1">
+          <div className="flex overflow-x-auto gap-3 scrollbar-hide mb-3">
             {niches.map((niche) => (
               <button
                 key={niche.id}
@@ -457,9 +517,6 @@ export default function Home() {
               </button>
             ))}
           </div>
-
-          {/* Niche hint */}
-          <p className="text-[11px] text-slate-500 mb-3">{currentNiche.hint}</p>
 
           <div className="flex overflow-x-auto gap-2 scrollbar-hide">
             {categories.map((cat) => (
@@ -512,10 +569,8 @@ export default function Home() {
             </div>
           </div>
           <div className="text-slate-500">
-            {filteredProducts.length} items ·{" "}
-            {cartTotalItems === 0
-              ? "No active batch yet"
-              : `batch $${cartTotalValue.toFixed(0)}/100`}
+            {filteredProducts.length} items · batch ${cartTotalValue.toFixed(0)}
+            /100
           </div>
         </div>
       </section>
@@ -535,34 +590,21 @@ export default function Home() {
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-lg font-semibold text-slate-900 mb-1">
-                No items match those filters right now
+                No products match right now
               </p>
               <p className="text-sm text-slate-500 mb-4">
-                Try a different time of day or show all items.
+                Try another time of day or clear the search.
               </p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                <button
-                  onClick={() => {
-                    setSelectedNiche("morning");
-                    setSelectedCategory("all");
-                    setSearchTerm("");
-                  }}
-                  className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white"
-                >
-                  Show all items
-                </button>
-                {selectedNiche !== suggestedNicheId && (
-                  <button
-                    onClick={() => {
-                      setSelectedNiche(suggestedNicheId);
-                      setSelectedCategory("all");
-                    }}
-                    className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-800 hover:border-teal-500"
-                  >
-                    Switch to {suggestedNiche.name}
-                  </button>
-                )}
-              </div>
+              <button
+                onClick={() => {
+                  setSelectedNiche("morning");
+                  setSelectedCategory("all");
+                  setSearchTerm("");
+                }}
+                className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white"
+              >
+                Reset filters
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -633,7 +675,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works – simplified 3‑step strip */}
+      {/* How it works */}
       <section
         id="how-it-works"
         className="border-t border-slate-200 bg-white/90 backdrop-blur py-10"
@@ -644,32 +686,31 @@ export default function Home() {
           </h2>
           <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-              <p className="text-xs text-slate-500 mb-1">Step 1 · You</p>
-              <p className="font-medium mb-1">Add items at your pace</p>
+              <p className="text-xs text-slate-500 mb-1">
+                01 · Time‑based niches
+              </p>
+              <p className="font-medium mb-1">Shop around your routine</p>
               <p className="text-xs text-slate-600">
-                No chasing drivers or timers. Your basket builds quietly in the
-                background.
+                Morning coffee, school snacks, dinner prep – each niche surfaces
+                the most relevant items.
               </p>
             </div>
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
-              <p className="text-xs text-slate-500 mb-1">Step 2 · GoJack AI</p>
-              <p className="font-medium mb-1">
-                Groups nearby orders into batches
-              </p>
+              <p className="text-xs text-slate-500 mb-1">02 · Smart batching</p>
+              <p className="font-medium mb-1">Orders grouped by suburb</p>
               <p className="text-xs text-slate-600">
-                Watches value and timing in your suburb to hit a fair shared
-                delivery target.
+                AI watches demand spikes and locks in batches when value and
+                timing line up.
               </p>
             </div>
             <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50">
               <p className="text-xs text-slate-500 mb-1">
-                Step 3 · Store & courier
+                03 · Simple delivery
               </p>
-              <p className="font-medium mb-1">
-                Partner shop packs, driver collects
-              </p>
+              <p className="font-medium mb-1">Store to door, clearly</p>
               <p className="text-xs text-slate-600">
-                Batch goes out in one clear window, without noisy maps or pings.
+                Status stays clear without noisy maps, just the steps that
+                matter.
               </p>
             </div>
           </div>
@@ -683,12 +724,10 @@ export default function Home() {
             <span className="text-lg">🛒</span>
             <div>
               <p className="font-medium text-slate-900">
-                {cartTotalItems} item{cartTotalItems !== 1 ? "s" : ""} in basket
+                {cartTotalItems} item{cartTotalItems !== 1 ? "s" : ""} in batch
               </p>
               <p className="text-[11px] text-slate-500">
-                {cartTotalItems === 0
-                  ? "No active batch yet. Start adding items to join or start a batch in your suburb."
-                  : `Batch value $${cartTotalValue.toFixed(2)} · target $100`}
+                Batch value ${cartTotalValue.toFixed(2)} · target $100
               </p>
             </div>
           </div>
@@ -739,5 +778,6 @@ export default function Home() {
         }
       `}</style>
     </div>
-  );
+
+);
 }
